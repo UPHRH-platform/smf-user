@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tarento.retail.config.JwtTokenUtil;
-import com.tarento.retail.dao.impl.UserDaoImpl;
 import com.tarento.retail.dto.UserDto;
 import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.LoginUser;
@@ -101,7 +100,7 @@ public class AuthenticationController {
 			authTokenInfo = authToken;
 			username = jwtTokenUtil.getUsernameFromToken(authToken);
 		}
-		if(StringUtils.isNotBlank(username)) { 
+		if (StringUtils.isNotBlank(username)) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 			if (jwtTokenUtil.validateToken(authTokenInfo, userDetails)) {
 				UserDto userDto = userService.findUserRolesActions(username);
@@ -109,8 +108,20 @@ public class AuthenticationController {
 				return userDto;
 			}
 		}
-		
+
 		return null;
+	}
+
+	@RequestMapping(value = PathRoutes.AuthenticationRoutes.SIGN_IN, method = RequestMethod.POST)
+	public String signIn(@RequestBody LoginUser loginUser) throws JsonProcessingException {
+		if (StringUtils.isNotBlank(loginUser.getUsername()) && StringUtils.isNotBlank(loginUser.getOtp())) {
+			LoginDto loginDto = userService.validateUserOTP(loginUser.getUsername(), loginUser.getOtp());
+			if (loginDto != null) {
+				return ResponseGenerator.successResponse(loginDto);
+			}
+		}
+		return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED);
+
 	}
 
 }

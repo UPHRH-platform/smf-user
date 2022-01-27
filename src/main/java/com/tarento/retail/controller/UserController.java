@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -36,11 +35,10 @@ import com.tarento.retail.dto.CountryDto;
 import com.tarento.retail.dto.UserCountryDto;
 import com.tarento.retail.dto.UserDto;
 import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
-import com.tarento.retail.dto.UserMasterRoleDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
-import com.tarento.retail.model.Role;
+import com.tarento.retail.model.LoginUser;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserDeviceToken;
 import com.tarento.retail.model.UserProfile;
@@ -414,7 +412,7 @@ public class UserController {
 			userDto.setActions(userService.findAllActionsByUser(user.getId(), user.getOrgId()));
 			userDto.setOrgId(user.getOrgId());
 			userDto.setTimeZone(user.getTimeZone());
-//			System.out.println("--------time zone------"+userDto.getTimeZone());
+			// System.out.println("--------time zone------"+userDto.getTimeZone());
 			return ResponseGenerator.successResponse(userDto);
 		}
 		return ResponseGenerator.failureResponse("Invalid Token");
@@ -508,6 +506,20 @@ public class UserController {
 			return ResponseGenerator.successResponse(userService.getMasterRoleByOrgDomainId(org_domain_id));
 		}
 		return ResponseGenerator.failureResponse("Invalid Token");
+	}
+
+	@RequestMapping(value = PathRoutes.UserRoutes.REQUEST_OTP, method = RequestMethod.POST)
+	public String requestOTP(@RequestBody LoginUser loginUser) throws JsonProcessingException {
+		if (StringUtils.isNotBlank(loginUser.getUsername())) {
+			if (userService.requestOTP(loginUser.getUsername())) {
+				return ResponseGenerator.successResponse("OTP sent successfully!");
+			} else {
+				return ResponseGenerator.failureResponse("Failed to send OTP.");
+			}
+		} else {
+			return ResponseGenerator.failureResponse("Email id missing");
+		}
+
 	}
 
 }

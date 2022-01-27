@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.tarento.retail.util.PathRoutes;
+
 import javax.annotation.Resource;
 
 @Configuration
@@ -53,7 +55,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/getUserDetails", "/getNumberOfUsers", "/upload", "/user/deleteCountry", "/user/deleteRole",
 						"/user/deleteUser", "/user/getMapActionToRole", "/user/getUnmapActionToRole",
 						"/user/mapActionToRole", "/user/unmapActionToRole", "/user/getUsersByMasterRole",
-						"/user/mapUserMasterRoleCountryOrg", "/user/getMasterRoleByOrgDomain","/user/domainRole","/user/getUsersByRole","/user/addOrgDomainRoles")
+						"/user/mapUserMasterRoleCountryOrg", "/user/getMasterRoleByOrgDomain", "/user/domainRole",
+						"/user/getUsersByRole", "/user/addOrgDomainRoles",
+						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.REQUEST_OTP,
+						PathRoutes.AuthenticationRoutes.SIGN_IN)
 				.permitAll().anyRequest().authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -59,6 +59,7 @@ public class Constants {
 	public static int FAILURE_ID = 320;
 	public static String UNAUTHORIZED = "Invalid credentials. Please try again.";
 	public static String PROCESS_FAIL = "Process failed, Please try again.";
+	public static final String EXCEPTION_METHOD = "Exception in %s method : %s";
 
 	/**
 	 * Allowed Origins for CORS Bean
@@ -76,6 +77,12 @@ public class Constants {
 	public static final String USER_DAO = "userDao";
 	public static final String ROLE_ACTION_SERVICE = "roleActionService";
 	public static final String ROLE_DAO = "roleDao";
+
+	/**
+	 * Messages
+	 */
+	public static final String OTP_EMAIL_SUBJECT = "UP SMF - OTP request";
+	public static final String OTP_EMAIL_BODY = "UP SMF login OTP: %s. Valid for 5 minutes";
 
 	public static enum CountryList {
 		SWE(1, "Sweden", "SWEDEN"), NOR(2, "Norway", "NORWAY"), FIN(3, "Finland", "FINLAND"), IND(4, "India", "INDIA");

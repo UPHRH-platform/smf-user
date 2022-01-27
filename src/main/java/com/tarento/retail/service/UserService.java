@@ -14,6 +14,8 @@ import com.tarento.retail.dto.UserMasterRoleDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.LoginAuthentication;
+import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
@@ -84,8 +86,8 @@ public interface UserService {
 	 * @return
 	 */
 	User findOne(String username);
-	
-	UserDto findUserRolesActions(String username); 
+
+	UserDto findUserRolesActions(String username);
 
 	/**
 	 * This method receives the Long ID to fetch the respective User Profile from
@@ -225,4 +227,8 @@ public interface UserService {
 	Boolean mapUserMasterRoleCountryOrg(UserMasterRoleCountryOrgDto userMasterRoleCountryOrgDto);
 
 	List<MasterRoleDto> getMasterRoleByOrgDomainId(Long orgDomainId);
+
+	Boolean requestOTP(String email);
+
+	LoginDto validateUserOTP(String username, String otp);
 }

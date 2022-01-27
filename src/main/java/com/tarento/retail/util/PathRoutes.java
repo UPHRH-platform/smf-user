@@ -36,13 +36,14 @@ public interface PathRoutes {
 		final String GET_USER_LIST_BY_ORG = "/getUserListByOrg";
 		final String GET_USERS_BY_MASTER_ROLE = "getUsersByMasterRole";
 		final String MAP_USER_MASTER_ROLE_COUNTRY_ORG = "mapUserMasterRoleCountryOrg";
+		final String REQUEST_OTP = "/requestOTP";
 	}
 
 	public interface AuthenticationRoutes {
 		final String AUTH_LOGIN_POST = "/login";
 		final String AUTH_TOKEN_VALIDATE_POST = "/token/validate";
 		final String AUTH_TOKEN_VALIDATE_GET = "/tokenValidate";
-
+		final String SIGN_IN = "/signIn";
 	}
 
 	public interface RoleActionRoutes {
@@ -60,6 +61,6 @@ public interface PathRoutes {
 		final String GET_UNMAP_ACTION_LIST = "/getUnmapActionToRole";
 		final String GET_MASTER_ROLE_BY_ORG_DOMAIN = "/getMasterRoleByOrgDomain";
 		final String GET_USER_BY_ROLE_POST = "/getUsersByRole";
-		final String ADD_ORG_DOMAIN_ROLES="/addOrgDomainRoles";
+		final String ADD_ORG_DOMAIN_ROLES = "/addOrgDomainRoles";
 	}
 }

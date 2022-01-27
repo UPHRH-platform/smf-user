@@ -26,7 +26,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.mysql.fabric.xmlrpc.base.Array;
 import com.tarento.retail.dao.RoleDao;
 import com.tarento.retail.dao.UserDao;
 import com.tarento.retail.dto.CountryDto;
@@ -37,6 +36,8 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.LoginAuthentication;
+import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
@@ -46,13 +47,17 @@ import com.tarento.retail.model.mapper.SqlDataMapper.UserProfileMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleActionMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleMapper;
 import com.tarento.retail.service.UserService;
+import com.tarento.retail.util.Cache;
 import com.tarento.retail.util.Constants;
+import com.tarento.retail.util.DateUtil;
+import com.tarento.retail.util.NotificationService;
+import com.tarento.retail.util.Util;
 
 @Service(value = Constants.USER_SERVICE)
 
 public class UserServiceImpl implements UserDetailsService, UserService {
 	public static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-	public static ConcurrentHashMap<String, UserDto> userRoleActionMap = new ConcurrentHashMap<>(); 
+	public static ConcurrentHashMap<String, UserDto> userRoleActionMap = new ConcurrentHashMap<>();
 
 	@Autowired
 	private UserDao userDao;
@@ -445,40 +450,40 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public UserDto findUserRolesActions(String username) {
-		if(userRoleActionMap.contains(username)) {  
-			return userRoleActionMap.get(username); 
-		} else { 
+		if (userRoleActionMap.contains(username)) {
+			return userRoleActionMap.get(username);
+		} else {
 			UserRoleActionMapper mapper = userDao.findUserRolesActions(username);
 			UserDto userDto = getUserFromMapper(mapper);
-			userRoleActionMap.put(userDto.getUserName(), userDto); 
+			userRoleActionMap.put(userDto.getUserName(), userDto);
 			return userDto;
 		}
-		 
+
 	}
-	
-	private UserDto getUserFromMapper(UserRoleActionMapper mapper) { 
-		UserDto dto = new UserDto(); 
+
+	private UserDto getUserFromMapper(UserRoleActionMapper mapper) {
+		UserDto dto = new UserDto();
 		Iterator<Entry<Long, UserDto>> itr = mapper.userMap.entrySet().iterator();
-		List<Role> roleList = new ArrayList<>(); 
-		Set<Action> actionSet = new HashSet<Action>(); 
-		while(itr.hasNext()) { 
-			Entry<Long, UserDto> userEntry = itr.next(); 
-			Long userId = userEntry.getKey(); 
-			dto = userEntry.getValue(); 
+		List<Role> roleList = new ArrayList<>();
+		Set<Action> actionSet = new HashSet<Action>();
+		while (itr.hasNext()) {
+			Entry<Long, UserDto> userEntry = itr.next();
+			Long userId = userEntry.getKey();
+			dto = userEntry.getValue();
 			Map<Long, Role> roleMap = mapper.userRoleMap.get(userId);
-			if(roleMap != null) { 
-				Iterator<Entry<Long, Role>> roleItr = roleMap.entrySet().iterator(); 
-				while(roleItr.hasNext()) { 
-					Entry<Long, Role> roleEntry = roleItr.next(); 
-					Long roleId = roleEntry.getKey(); 
+			if (roleMap != null) {
+				Iterator<Entry<Long, Role>> roleItr = roleMap.entrySet().iterator();
+				while (roleItr.hasNext()) {
+					Entry<Long, Role> roleEntry = roleItr.next();
+					Long roleId = roleEntry.getKey();
 					Role role = roleEntry.getValue();
-					roleList.add(role); 
-					Map<Long, Action> roleActionMap = mapper.roleActionMap.get(roleId); 
-					if(roleActionMap != null) { 
+					roleList.add(role);
+					Map<Long, Action> roleActionMap = mapper.roleActionMap.get(roleId);
+					if (roleActionMap != null) {
 						Iterator<Entry<Long, Action>> actionItr = roleActionMap.entrySet().iterator();
-						while(actionItr.hasNext()) { 
+						while (actionItr.hasNext()) {
 							Entry<Long, Action> actionEntry = actionItr.next();
-							Action action = actionEntry.getValue(); 
+							Action action = actionEntry.getValue();
 							actionSet.add(action);
 						}
 					}
@@ -487,6 +492,46 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		}
 		dto.setRoles(roleList);
 		dto.setActions(actionSet);
-		return dto; 
+		return dto;
+	}
+
+	@Override
+	public Boolean requestOTP(String email) {
+		try {
+			String otp = Util.generateOTP();
+			// send Email
+			String[] receipent = { email };
+			Boolean sendEmail = NotificationService.sendMail(receipent, Constants.OTP_EMAIL_SUBJECT,
+					String.format(Constants.OTP_EMAIL_BODY, otp));
+			if (sendEmail) {
+				Cache.setUserOTPData(email, otp);
+				return Boolean.TRUE;
+			}
+
+		} catch (Exception e) {
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "requestOTP", e.getMessage()));
+		}
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public LoginDto validateUserOTP(String username, String otp) {
+		try {
+			LoginDto loginDto = new LoginDto();
+			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
+			if (loginAuth != null && loginAuth.getOtpExpiryDate() > DateUtil.getCurrentTimestamp()
+					&& loginAuth.getOtp().equals(otp)) {
+				// generate user session id and cache it
+				String sessionId = Util.getUniqueSessionId(username);
+				Cache.setTokenDetails(username, sessionId);
+
+				loginDto.setAuthToken(sessionId);
+				loginDto.setUsername(username);
+				return loginDto;
+			}
+		} catch (Exception e) {
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserOTP", e.getMessage()));
+		}
+		return null;
 	}
 }
