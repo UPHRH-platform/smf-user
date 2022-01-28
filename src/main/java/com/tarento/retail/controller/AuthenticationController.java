@@ -26,6 +26,7 @@ import com.tarento.retail.model.LoginUser;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
+import com.tarento.retail.model.UserProfile;
 import com.tarento.retail.service.UserService;
 import com.tarento.retail.util.Constants;
 import com.tarento.retail.util.PathRoutes;
@@ -115,13 +116,31 @@ public class AuthenticationController {
 	@RequestMapping(value = PathRoutes.AuthenticationRoutes.SIGN_IN, method = RequestMethod.POST)
 	public String signIn(@RequestBody LoginUser loginUser) throws JsonProcessingException {
 		if (StringUtils.isNotBlank(loginUser.getUsername()) && StringUtils.isNotBlank(loginUser.getOtp())) {
-			LoginDto loginDto = userService.validateUserOTP(loginUser.getUsername(), loginUser.getOtp());
-			if (loginDto != null) {
-				return ResponseGenerator.successResponse(loginDto);
+			Boolean valid = userService.validateUserOTP(loginUser.getUsername(), loginUser.getOtp());
+			if (valid) {
+				// Generate JWT token
+				User user = new User();
+				user.setUsername(loginUser.getUsername());
+				final String token = jwtTokenUtil.generateToken(user);
+
+				// get User profile details
+				UserProfile userProfile = userService.getUserProfile(loginUser.getUsername());
+				UserAuthentication userAuthentication = new UserAuthentication();
+				userAuthentication.setUserId(userProfile.getId());
+				userAuthentication.setAuthToken(token);
+				userAuthentication = userService.save(userAuthentication);
+				LOGGER.info("Saving the User Authentication on Auth Records Log");
+
+				userProfile.setAuthToken(token);
+				// get user roles
+				List<Role> userRoles = userService.findAllRolesByUser(userProfile.getId(), userProfile.getOrgId());
+				LOGGER.info("Fetched Roles Assigned for the User");
+				userProfile.setRoles(userRoles);
+
+				return ResponseGenerator.successResponse(userProfile);
 			}
 		}
 		return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED);
-
 	}
 
 }

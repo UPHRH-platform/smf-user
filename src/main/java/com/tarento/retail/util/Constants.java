@@ -59,6 +59,7 @@ public class Constants {
 	public static int FAILURE_ID = 320;
 	public static String UNAUTHORIZED = "Invalid credentials. Please try again.";
 	public static String PROCESS_FAIL = "Process failed, Please try again.";
+	public static String UNAUTHORIZED_USER = "Unauthorized user";
 	public static final String EXCEPTION_METHOD = "Exception in %s method : %s";
 
 	/**

@@ -3,8 +3,6 @@ package com.tarento.retail.model;
 import java.util.Date;
 import java.util.List;
 
-import com.tarento.retail.dto.UserProfileDto;
-
 /**
  * This model contains the User Profile Information for a User
  * 

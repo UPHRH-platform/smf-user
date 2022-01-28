@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -28,6 +29,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
@@ -281,7 +283,11 @@ public class UserDaoImpl implements UserDao {
 	public UserRoleMapper findAllRolesByUser(Long userId, String orgId) {
 		UserRoleMapper mapper = new SqlDataMapper().new UserRoleMapper();
 		try {
-			jdbcTemplate.query(UserQueries.GET_ROLES_FOR_USER, new Object[] { userId, orgId }, mapper);
+			if (StringUtils.isBlank(orgId)) {
+				jdbcTemplate.query(UserQueries.GET_ROLES_FOR_USER_BY_ID, new Object[] { userId }, mapper);
+			} else {
+				jdbcTemplate.query(UserQueries.GET_ROLES_FOR_USER, new Object[] { userId, orgId }, mapper);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Encountered an exception while fetching the Roles for a User : " + e);
 		}
@@ -411,9 +417,8 @@ public class UserDaoImpl implements UserDao {
 	public Long checkUserNameExists(String emailId, String phoneNo) {
 		Long userId = 0L;
 		try {
-			userId = jdbcTemplate.queryForObject(
-					"SELECT id FROM user WHERE username = ? OR email_id = ? OR phone_no = ? or username = ? ",
-					new Object[] { emailId, emailId, phoneNo, phoneNo }, Long.class);
+			userId = jdbcTemplate.queryForObject(UserQueries.GET_USER_ID, new Object[] { emailId, emailId, phoneNo },
+					Long.class);
 		} catch (Exception e) {
 			LOGGER.error("Encountered an Exception while finding the UserName Availability : " + e);
 		}
@@ -799,8 +804,7 @@ public class UserDaoImpl implements UserDao {
 	public UserRoleActionMapper findUserRolesActions(String username) {
 		UserRoleActionMapper mapper = new SqlDataMapper().new UserRoleActionMapper();
 		try {
-			jdbcTemplate.query(UserQueries.GET_USER_ROLE_ACTIONS,
-					new Object[] { username }, mapper);
+			jdbcTemplate.query(UserQueries.GET_USER_ROLE_ACTIONS, new Object[] { username }, mapper);
 		} catch (Exception e) {
 			LOGGER.error("Encountered an exception while fetching the User By UserName : " + e);
 		}
@@ -817,5 +821,19 @@ public class UserDaoImpl implements UserDao {
 			LOGGER.error("Encountered an Exception while fetching the User by Username : " + e);
 		}
 		return user;
+	}
+
+	@Override
+	public UserProfile getUserProfile(String username) {
+		try {
+			List<UserProfile> userList = jdbcTemplate.query(UserQueries.GET_USER_PROFILE,
+					new Object[] { username, username }, new BeanPropertyRowMapper<>(UserProfile.class));
+			if (userList.size() != 0) {
+				return userList.get(0);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Encountered an Exception while fetching the User by Username : " + e);
+		}
+		return null;
 	}
 }

@@ -3,9 +3,20 @@ package com.tarento.retail.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.tarento.retail.model.LoginAuthentication;
 
+@Service
 public class Cache {
+
+	private static AppConfiguration appConfiguration;
+
+	@Autowired
+	private Cache(AppConfiguration appConfig) {
+		appConfiguration = appConfig;
+	}
 
 	private static Map<String, LoginAuthentication> userAuthData = new HashMap<>();
 
@@ -26,7 +37,7 @@ public class Cache {
 	 */
 	public static void setUserOTPData(String username, String otp) {
 		// set expiry time for 5 mins
-		Long expiryTime = DateUtil.getCurrentTimestamp() + (5 * 60 * 1000);
+		Long expiryTime = DateUtil.getCurrentTimestamp() + (appConfiguration.getOtpValidity() * 60 * 1000);
 
 		LoginAuthentication loginAuth = new LoginAuthentication();
 		loginAuth.setUsername(username);
@@ -45,7 +56,7 @@ public class Cache {
 	 *            String
 	 */
 	public static void setTokenDetails(String username, String token) {
-		Long expiryTime = DateUtil.getCurrentTimestamp() + ((24 * 60) * 60 * 1000);
+		Long expiryTime = DateUtil.getCurrentTimestamp() + (appConfiguration.getJwtValidity() * 60 * 1000);
 
 		LoginAuthentication loginAuth = new LoginAuthentication();
 		if (getUserAuthData(username) != null) {

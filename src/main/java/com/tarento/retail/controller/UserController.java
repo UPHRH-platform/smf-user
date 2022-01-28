@@ -511,15 +511,16 @@ public class UserController {
 	@RequestMapping(value = PathRoutes.UserRoutes.REQUEST_OTP, method = RequestMethod.POST)
 	public String requestOTP(@RequestBody LoginUser loginUser) throws JsonProcessingException {
 		if (StringUtils.isNotBlank(loginUser.getUsername())) {
-			if (userService.requestOTP(loginUser.getUsername())) {
-				return ResponseGenerator.successResponse("OTP sent successfully!");
-			} else {
+			if (userService.checkUserNameExists(loginUser.getUsername(), null) != 0L) {
+				if (userService.requestOTP(loginUser.getUsername())) {
+					return ResponseGenerator.successResponse("OTP sent successfully!");
+				}
 				return ResponseGenerator.failureResponse("Failed to send OTP.");
 			}
+			return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED_USER);
 		} else {
 			return ResponseGenerator.failureResponse("Email id missing");
 		}
-
 	}
 
 }

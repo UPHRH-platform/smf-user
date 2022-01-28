@@ -1,6 +1,5 @@
 package com.tarento.retail.config;
 
-import static com.tarento.retail.util.Constants.ACCESS_TOKEN_VALIDITY_SECONDS;
 import static com.tarento.retail.util.Constants.JWT_GRANTED_AUTHORITY;
 import static com.tarento.retail.util.Constants.JWT_ISSUER;
 import static com.tarento.retail.util.Constants.SIGNING_KEY;
@@ -10,11 +9,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.tarento.retail.model.User;
+import com.tarento.retail.util.AppConfiguration;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +29,9 @@ public class JwtTokenUtil implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String CLAIMS_KEY = "scopes";  
+	
+	@Autowired
+	AppConfiguration appConfig;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -67,7 +71,7 @@ public class JwtTokenUtil implements Serializable {
                 .setClaims(claims)
                 .setIssuer(JWT_ISSUER)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS*1000))
+                .setExpiration(new Date(System.currentTimeMillis() +  appConfig.getJwtValidity() * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
                 .compact();
     }

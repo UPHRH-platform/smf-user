@@ -228,7 +228,10 @@ public interface UserService {
 
 	List<MasterRoleDto> getMasterRoleByOrgDomainId(Long orgDomainId);
 
+	UserProfile getUserProfile(String username);
+
 	Boolean requestOTP(String email);
 
-	LoginDto validateUserOTP(String username, String otp);
+	Boolean validateUserOTP(String username, String otp);
+
 }

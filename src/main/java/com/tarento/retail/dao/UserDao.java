@@ -10,6 +10,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
 import com.tarento.retail.model.UserDeviceToken;
@@ -28,7 +29,7 @@ public interface UserDao {
 	 * @return
 	 */
 	public User findByUsername(String username);
-	
+
 	public User findOnlyUser(String username);
 
 	/**
@@ -242,13 +243,14 @@ public interface UserDao {
 
 	public Boolean deleteUser(UserDto user);
 
-
 	Boolean mapUserMasterRoleCountryOrg(UserMasterRoleCountryOrgDto userMasterRoleCountryOrg);
 
 	List<MasterRoleDto> getMasterRoleByOrgDomainId(Long id);
-	
-	UserRoleActionMapper findUserRolesActions(String username); 
+
+	UserRoleActionMapper findUserRolesActions(String username);
 
 	public List<UserDto> getUsersByMasterRole(String roleCode, Long orgId);
+
+	UserProfile getUserProfile(String username);
 
 }

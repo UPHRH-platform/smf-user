@@ -496,6 +496,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 
 	@Override
+	public UserProfile getUserProfile(String username) {
+		return userDao.getUserProfile(username);
+	}
+
+	@Override
 	public Boolean requestOTP(String email) {
 		try {
 			String otp = Util.generateOTP();
@@ -515,23 +520,25 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 
 	@Override
-	public LoginDto validateUserOTP(String username, String otp) {
+	public Boolean validateUserOTP(String username, String otp) {
 		try {
-			LoginDto loginDto = new LoginDto();
+			// LoginDto loginDto = new LoginDto();
 			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
 			if (loginAuth != null && loginAuth.getOtpExpiryDate() > DateUtil.getCurrentTimestamp()
 					&& loginAuth.getOtp().equals(otp)) {
-				// generate user session id and cache it
-				String sessionId = Util.getUniqueSessionId(username);
-				Cache.setTokenDetails(username, sessionId);
-
-				loginDto.setAuthToken(sessionId);
-				loginDto.setUsername(username);
-				return loginDto;
+				// // generate user session id and cache it
+				// String sessionId = Util.getUniqueSessionId(username);
+				// Cache.setTokenDetails(username, sessionId);
+				//
+				// loginDto.setAuthToken(sessionId);
+				// loginDto.setUsername(username);
+				// return loginDto;
+				return Boolean.TRUE;
 			}
 		} catch (Exception e) {
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserOTP", e.getMessage()));
 		}
-		return null;
+		return Boolean.FALSE;
 	}
+
 }

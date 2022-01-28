@@ -30,4 +30,10 @@ public class AppConfiguration {
 	@Value("${mail.smtp.email}")
 	private String smtpEmail;
 
+	@Value("${otp.validity.mins}")
+	private int otpValidity;
+
+	@Value("${jwt.validity.mins}")
+	private int jwtValidity;
+
 }

@@ -30,8 +30,8 @@ public class NotificationService {
 		props.put("mail.smtp.host", appConfiguration.getSmtpHost());
 		props.put("mail.smtp.socketFactory.port", appConfiguration.getSmtpPort());
 		props.put("mail.smtp.port", appConfiguration.getSmtpPort());
-		props.put("mail.smtp.auth", true);
-		props.put("mail.smtp.starttls.enable", true);
+		props.put("mail.smtp.auth", appConfiguration.getSmtpAuth());
+		props.put("mail.smtp.starttls.enable", appConfiguration.getSmtpAuth());
 
 	}
 

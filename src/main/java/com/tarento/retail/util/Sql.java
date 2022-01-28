@@ -35,7 +35,9 @@ public interface Sql {
 	}
 
 	public interface RoleAction {
-//		final String GET_ALL_ROLES = "SELECT id, role_name, r.code , description, org_id FROM role r INNER JOIN role_org ro ON r.id= ro.role_id WHERE ro.org_id = ?";
+		// final String GET_ALL_ROLES = "SELECT id, role_name, r.code , description,
+		// org_id FROM role r INNER JOIN role_org ro ON r.id= ro.role_id WHERE ro.org_id
+		// = ?";
 		final String GET_ALL_ROLES = "SELECT id, role_name, code , description, org_id FROM role where org_id=?";
 		// final String GET_ROLE_BY_ORG_DOMAIN = "select * from org_domain_role odr
 		// INNER JOIN role r ON odr.role_id = r.id where org_domain=?";
@@ -53,7 +55,8 @@ public interface Sql {
 		final String INSERT_ACTION = "INSERT INTO retail_actions (description, module_code, module_name, url) VALUES (?, ?, ?, ?)";
 		final String DELETE_ROLE = "DELETE from role where id=?";
 		final String MAP_ACTION_TO_ROLE = "insert into role_actions(role_id,action_id) values(?,?)";
-//		final String MAP_ACTION_TO_ROLE = "insert into role_actions(role_id,action_id, org_id) values(?,?,?)";
+		// final String MAP_ACTION_TO_ROLE = "insert into
+		// role_actions(role_id,action_id, org_id) values(?,?,?)";
 		final String UNMAP_ORG_ROLE = "DELETE FROM role_org WHERE role_id = ? AND org_id = ?";
 		final String UNMAP_ACTION_TO_ROLE = "delete from role_actions where action_id=? and role_id = ?";
 		final String GET_MAPPED_ACTION_ROLE_LIST = "select * from retail_user.actions where id IN (select action_id as id from retail_user.role_actions where role_id=?)";
@@ -65,8 +68,8 @@ public interface Sql {
 	public interface UserQueries {
 		final String SELECT_USER_BY_TOKEN = "SELECT COUNT(*) FROM user_authentication WHERE auth_token = ? ";
 		final String SELECT_USER_ON_USERNAME = "SELECT * FROM user usr inner join country_user cu on usr.id =cu.user_id inner join country c on cu.country_id = c.id where username=? or phone_no = ?";
-		
-		final String SELECT_ONLY_USER = "SELECT id, username, password, email_id, phone_no FROM user where username = ? or phone_no = ? ";  
+
+		final String SELECT_ONLY_USER = "SELECT id, username, password, email_id, phone_no FROM user where username = ? or phone_no = ? ";
 
 		final String MAP_USER_TO_ROLE = "INSERT INTO user_role (user_id, role_id, org_id) VALUES (?, ?, ?)";
 		final String MAP_USER_TO_COUNTRY = "INSERT INTO retail_user.country_user (user_id, country_id, is_default) VALUES (?, ?, ?)";
@@ -102,6 +105,9 @@ public interface Sql {
 		final String GET_ROLES_FOR_USER = " select ur.user_id, ur.role_id, r.role_name, r.description , r.is_super_admin as is_super_admin , \r\n"
 				+ "r.org_id as org_id from user_role ur LEFT JOIN role r ON ur.role_id = r.id \r\n"
 				+ "WHERE ur.user_id = ? and r.org_id = ? ";
+		final String GET_ROLES_FOR_USER_BY_ID = " select ur.user_id, ur.role_id, r.role_name, r.description , r.is_super_admin as is_super_admin , \r\n"
+				+ "r.org_id as org_id from user_role ur LEFT JOIN role r ON ur.role_id = r.id \r\n"
+				+ "WHERE ur.user_id = ?";
 		final String GET_USER_BY_PHONE = "SELECT usr.id as id, username, password, email_id, phone_no, usr.org_id, c.code as code, usr.timezone  FROM user usr left join country_user cu on usr.id = cu.user_id left join country c on c.id = cu.country_id WHERE phone_no=?";
 		final String USER_ACTIVE_CONDITION = " WHERE usr.is_active = ? ";
 		final String WHERE_CLAUSE = " WHERE ";
@@ -154,19 +160,19 @@ public interface Sql {
 		final String MAP_USER_MASTER_ROLE_COUNTRY_ORG = "insert into retail_user.master_role_country_user_org(master_role_id,user_id,country_id,org_id) values(?,?,?,?)";
 		final String GET_MASTER_ROLE_LIST_BY_ORG_DOMAIN = "select * from retail_user.master_role where id IN (select master_role_id from "
 				+ "retail_user.master_role_org_domain where org_domain_id=?)";
-		final String GET_USER_ROLE_ACTIONS = " SELECT usr.id as userId, usr.password as userPassword, usr.username as username, usr.email_id as userEmailId, usr.phone_no as userPhoneNo, " + 
-				" usr.is_active as userIsActive, usr.is_deleted as userIsDeleted, usr.org_id as userOrgId, usr.avatar_url as userAvatarUrl, " + 
-				" cu.country_id as userCountryId, " + 
-				" r.id as roleId, r.role_name as roleName, r.code as roleCode, r.description as roleDescription, r.is_super_admin as isSuperAdmin, "+  
-				" r.is_org_admin as isOrgAdmin, r.org_id as roleOrgId, " + 
-				" act.id as actionId, act.name as actionName, act.url as actionUrl " + 
-				" from user usr LEFT JOIN country_user cu ON usr.id = cu.user_id " + 
-				" LEFT JOIN user_role ur ON ur.user_id = usr.id " + 
-				" LEFT JOIN role r ON ur.role_id = r.id " + 
-				" LEFT JOIN role_org ro ON ro.role_id = r.id " + 
-				" LEFT JOIN role_actions ra ON r.id = ra.role_id " + 
-				" LEFT JOIN actions act ON ra.action_id = act.id " + 
-				" WHERE usr.username = ? "; 
+		final String GET_USER_ROLE_ACTIONS = " SELECT usr.id as userId, usr.password as userPassword, usr.username as username, usr.email_id as userEmailId, usr.phone_no as userPhoneNo, "
+				+ " usr.is_active as userIsActive, usr.is_deleted as userIsDeleted, usr.org_id as userOrgId, usr.avatar_url as userAvatarUrl, "
+				+ " cu.country_id as userCountryId, "
+				+ " r.id as roleId, r.role_name as roleName, r.code as roleCode, r.description as roleDescription, r.is_super_admin as isSuperAdmin, "
+				+ " r.is_org_admin as isOrgAdmin, r.org_id as roleOrgId, "
+				+ " act.id as actionId, act.name as actionName, act.url as actionUrl "
+				+ " from user usr LEFT JOIN country_user cu ON usr.id = cu.user_id "
+				+ " LEFT JOIN user_role ur ON ur.user_id = usr.id " + " LEFT JOIN role r ON ur.role_id = r.id "
+				+ " LEFT JOIN role_org ro ON ro.role_id = r.id " + " LEFT JOIN role_actions ra ON r.id = ra.role_id "
+				+ " LEFT JOIN actions act ON ra.action_id = act.id " + " WHERE usr.username = ? ";
+
+		final String GET_USER_ID = "SELECT id FROM user WHERE username = ? OR email_id = ? OR phone_no = ?";
+		final String GET_USER_PROFILE = "SELECT user.id, user.username, user.email_id as emailId, user.phone_no as phoneNo, user.avatar_url  as avatarUrl, user_profile.first_name, user_profile.last_name, user_profile.dob FROM user LEFT JOIN user_profile on user_profile.user_id = user.id WHERE (user.username = ? or user.email_id = ? ) and is_active is TRUE";
 	}
 
 }
