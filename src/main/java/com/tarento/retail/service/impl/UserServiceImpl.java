@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -506,8 +507,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			String otp = Util.generateOTP();
 			// send Email
 			String[] receipent = { email };
-			Boolean sendEmail = NotificationService.sendMail(receipent, Constants.OTP_EMAIL_SUBJECT,
-					String.format(Constants.OTP_EMAIL_BODY, otp));
+			VelocityContext context = new VelocityContext();
+			context.put("otp", otp);
+			Boolean sendEmail = NotificationService.sendMail(receipent, Constants.OTP_EMAIL_SUBJECT, context,
+					Constants.EmailTemplate.OTP);
 			if (sendEmail) {
 				Cache.setUserOTPData(email, otp);
 				return Boolean.TRUE;
@@ -522,17 +525,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Override
 	public Boolean validateUserOTP(String username, String otp) {
 		try {
-			// LoginDto loginDto = new LoginDto();
 			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
 			if (loginAuth != null && loginAuth.getOtpExpiryDate() > DateUtil.getCurrentTimestamp()
 					&& loginAuth.getOtp().equals(otp)) {
-				// // generate user session id and cache it
-				// String sessionId = Util.getUniqueSessionId(username);
-				// Cache.setTokenDetails(username, sessionId);
-				//
-				// loginDto.setAuthToken(sessionId);
-				// loginDto.setUsername(username);
-				// return loginDto;
 				return Boolean.TRUE;
 			}
 		} catch (Exception e) {

@@ -85,6 +85,10 @@ public class Constants {
 	public static final String OTP_EMAIL_SUBJECT = "UP SMF - OTP request";
 	public static final String OTP_EMAIL_BODY = "UP SMF login OTP: %s. Valid for 5 minutes";
 
+	public interface EmailTemplate {
+		public static final String OTP = "/otp_template.vm";
+	}
+
 	public static enum CountryList {
 		SWE(1, "Sweden", "SWEDEN"), NOR(2, "Norway", "NORWAY"), FIN(3, "Finland", "FINLAND"), IND(4, "India", "INDIA");
 		private int countryCode;
