@@ -25,7 +25,7 @@ import com.tarento.retail.model.UserDeviceToken;
 import com.tarento.retail.model.UserProfile;
 
 public class SqlDataMapper {
-	
+
 	public static final Logger LOGGER = LoggerFactory.getLogger(SqlDataMapper.class);
 
 	public class UserMapper implements RowMapper<User> {
@@ -56,7 +56,7 @@ public class SqlDataMapper {
 			return user;
 		}
 	}
-	
+
 	public class SimpleUserMapper implements RowMapper<User> {
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			User user = new User();
@@ -119,6 +119,29 @@ public class SqlDataMapper {
 		public Map<Long, List<Role>> userRoleMap = new HashMap<>();
 
 		public UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			if (userRoleMap.containsKey(rs.getLong("id"))) {
+				List<Role> roleList = userRoleMap.get(rs.getLong("id"));
+				Role role = new Role();
+				role.setId(rs.getLong("role_id"));
+				role.setName(rs.getString("role_name"));
+				role.setDescription(rs.getString("description"));
+				if (StringUtils.isNotBlank(rs.getString("role_name"))) {
+					roleList.add(role);
+				}
+			} else {
+				List<Role> roleList = new ArrayList<>();
+				Role role = new Role();
+				role.setId(rs.getLong("role_id"));
+				role.setName(rs.getString("role_name"));
+				role.setDescription(rs.getString("description"));
+
+				if (StringUtils.isNotBlank(rs.getString("role_name"))) {
+					roleList.add(role);
+				}
+				userRoleMap.put(rs.getLong("id"), roleList);
+			}
+
 			if (!userMap.containsKey(rs.getLong("id"))) {
 				UserProfile user = new UserProfile();
 				user.setId(rs.getLong("id"));
@@ -144,94 +167,75 @@ public class SqlDataMapper {
 				user.setEmploymentType(rs.getString("employment_type"));
 				user.setTimeZone(rs.getString("timezone"));
 				userMap.put(rs.getLong("id"), user);
-			}
-
-			if (userRoleMap.containsKey(rs.getLong("id"))) {
-				List<Role> roleList = userRoleMap.get(rs.getLong("id"));
-				Role role = new Role();
-				role.setId(rs.getLong("role_id"));
-				role.setName(rs.getString("role_name"));
-				role.setDescription(rs.getString("description"));
-				if (StringUtils.isNotBlank(rs.getString("role_name"))) {
-					roleList.add(role);
-				}
+				userMap.get(rs.getLong("id")).setRoles(userRoleMap.get(rs.getLong("id")));
 			} else {
-				List<Role> roleList = new ArrayList<>();
-				Role role = new Role();
-				role.setId(rs.getLong("role_id"));
-				role.setName(rs.getString("role_name"));
-				role.setDescription(rs.getString("description"));
-
-				if (StringUtils.isNotBlank(rs.getString("role_name"))) {
-					roleList.add(role);
-				}
-				userRoleMap.put(rs.getLong("id"), roleList);
+				userMap.get(rs.getLong("id")).setRoles(userRoleMap.get(rs.getLong("id")));
 			}
 
 			return null;
 		}
 	}
-	
+
 	public class UserRoleActionMapper implements RowMapper<UserProfile> {
 		public Map<Long, UserDto> userMap = new HashMap<>();
 		public Map<Long, Map<Long, Role>> userRoleMap = new HashMap<>();
 		public Map<Long, Map<Long, Action>> roleActionMap = new HashMap<>();
 
 		public UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {
-			if(!userMap.containsKey(rs.getLong("userId"))) { 
-				userMap.put(rs.getLong("userId"), createUser(rs)); 
-				
+			if (!userMap.containsKey(rs.getLong("userId"))) {
+				userMap.put(rs.getLong("userId"), createUser(rs));
+
 				Map<Long, Role> roleMap = new HashMap<>();
-				roleMap.put(rs.getLong("roleId"), createRole(rs)); 
-				userRoleMap.put(rs.getLong("userId"), roleMap); 
-				
+				roleMap.put(rs.getLong("roleId"), createRole(rs));
+				userRoleMap.put(rs.getLong("userId"), roleMap);
+
 				Map<Long, Action> actionMap = new HashMap<>();
 				actionMap.put(rs.getLong("actionId"), createAction(rs));
-				roleActionMap.put(rs.getLong("roleId"), actionMap); 
-			} else { 
+				roleActionMap.put(rs.getLong("roleId"), actionMap);
+			} else {
 				Map<Long, Role> roleMap = userRoleMap.get(rs.getLong("userId"));
-				if(!roleMap.containsKey(rs.getLong("roleId"))) { 
+				if (!roleMap.containsKey(rs.getLong("roleId"))) {
 					roleMap.put(rs.getLong("roleId"), createRole(rs));
-					
+
 					Map<Long, Action> actionMap = new HashMap<>();
 					actionMap.put(rs.getLong("actionId"), createAction(rs));
-					roleActionMap.put(rs.getLong("roleId"), actionMap); 
-				} else { 
+					roleActionMap.put(rs.getLong("roleId"), actionMap);
+				} else {
 					Map<Long, Action> actionMap = roleActionMap.get(rs.getLong("roleId"));
 					actionMap.put(rs.getLong("actionId"), createAction(rs));
 				}
 			}
-			return null; 
+			return null;
 		}
-		
-		private Action createAction(ResultSet rs) { 
-			Action action = new Action(); 
-			try { 
+
+		private Action createAction(ResultSet rs) {
+			Action action = new Action();
+			try {
 				action.setId(rs.getLong("actionId"));
 				action.setName(rs.getString("actionName"));
 				action.setUrl(rs.getString("actionUrl"));
-			} catch (Exception e) { 
-				LOGGER.info("Encountered an Exception while creating Action : " + e.getMessage()); 
+			} catch (Exception e) {
+				LOGGER.info("Encountered an Exception while creating Action : " + e.getMessage());
 			}
-			return action; 
+			return action;
 		}
-		
-		private UserDto createUser(ResultSet rs) { 
-			UserDto userDto = new UserDto(); 
-			try { 
+
+		private UserDto createUser(ResultSet rs) {
+			UserDto userDto = new UserDto();
+			try {
 				userDto.setId(rs.getLong("userId"));
 				userDto.setUserName(rs.getString("username"));
 				userDto.setEmailId(rs.getString("userEmailId"));
 				userDto.setOrgId(String.valueOf(rs.getLong("userOrgId")));
-			} catch (Exception e) { 
-				LOGGER.info("Encountered an Exception while creating User : " + e.getMessage()); 
+			} catch (Exception e) {
+				LOGGER.info("Encountered an Exception while creating User : " + e.getMessage());
 			}
-			return userDto; 
+			return userDto;
 		}
-		
-		private Role createRole(ResultSet rs) { 
-			Role role = new Role(); 
-			try { 
+
+		private Role createRole(ResultSet rs) {
+			Role role = new Role();
+			try {
 				role.setId(rs.getLong("roleId"));
 				role.setName(rs.getString("roleName"));
 				role.setCode(rs.getString("roleCode"));
@@ -239,10 +243,10 @@ public class SqlDataMapper {
 				role.setAdmin(rs.getBoolean("isOrgAdmin"));
 				role.setSuperAdmin(rs.getBoolean("isSuperAdmin"));
 				role.setOrgId(rs.getLong("roleOrgId"));
-			} catch (Exception e) { 
-				LOGGER.info("Encountered an Exception while creating Role : " + e.getMessage()); 
+			} catch (Exception e) {
+				LOGGER.info("Encountered an Exception while creating Role : " + e.getMessage());
 			}
-			return role; 
+			return role;
 		}
 	}
 
