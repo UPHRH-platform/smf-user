@@ -145,6 +145,7 @@ public class RoleDaoImpl implements RoleDao {
 					new SqlDataMapper().new RoleMapper());
 		} catch (Exception e) {
 			LOGGER.error("Encountered an exception while fetching all roles" + e);
+			return null;
 		}
 		return roleList;
 	}

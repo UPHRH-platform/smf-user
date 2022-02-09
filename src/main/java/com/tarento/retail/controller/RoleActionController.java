@@ -45,13 +45,19 @@ public class RoleActionController {
 	}
 
 	@RequestMapping(value = PathRoutes.RoleActionRoutes.GET_ALL_ROLES, method = RequestMethod.GET)
-	public List<Role> listRoles(@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo) {
+	public String listRoles(@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo)
+			throws JsonProcessingException {
 		Long orgId = null;
 		if (StringUtils.isNotBlank(xUserInfo)) {
 			User userInfo = new Gson().fromJson(xUserInfo, User.class);
 			orgId = Long.parseLong(userInfo.getOrgId());
 		}
-		return roleActionService.getAllRoles(orgId);
+		orgId = 1L;
+		List<Role> rolesList = roleActionService.getAllRoles(orgId);
+		if (rolesList != null) {
+			return ResponseGenerator.successResponse(rolesList);
+		}
+		return ResponseGenerator.failureResponse(Constants.PROCESS_FAIL);
 	}
 
 	@RequestMapping(value = PathRoutes.RoleActionRoutes.GET_DEFAULT_ROLES_BY_DOMAIN, method = RequestMethod.GET)
