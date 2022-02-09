@@ -34,6 +34,8 @@ public interface ResponseMessages {
 		final String UNAUTHORIZED_ROLE_MAPPING_PERMISSION = "User does not have role mapping permisoin to  User. Please Check";
 		final String ORG_DOMAIN_CODE_UNAVAILABLE = "ORG Domain code is mandatory. Please add and try again";
 		final String ORG_ID_UNAVAILABLE = "ORG ID is mandatory. Please add and try again";
+		final String CHECK_REQUEST_PARAMS = "Check your request params";
+		final String CHECK_USER_ID = "Check user id";
 	}
 
 	public interface SuccessMessages {

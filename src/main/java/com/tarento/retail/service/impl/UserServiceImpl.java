@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,8 @@ import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
 import com.tarento.retail.model.LoginAuthentication;
-import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.Role;
+import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
 import com.tarento.retail.model.UserDeviceToken;
@@ -155,8 +156,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public User save(User user) {
-		String encryptedPassword = bcryptEncoder.encode(user.getPassword());
-		user.setPassword(encryptedPassword);
+		if (StringUtils.isNotBlank(user.getPassword())) {
+			String encryptedPassword = bcryptEncoder.encode(user.getPassword());
+			user.setPassword(encryptedPassword);
+		}
 		return userDao.save(user);
 	}
 
@@ -214,15 +217,36 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		newUser.setEmailId(profile.getEmailId());
 		newUser.setPassword(profile.getPassword());
 		newUser.setPhoneNo(profile.getPhoneNo());
-		newUser.setIsActive(profile.getIsActive());
-		newUser.setIsDeleted(profile.getIsDeleted());
 		newUser.setOrgId(profile.getOrgId());
 		newUser.setCountryCode(profile.getCountryCode());
 		newUser.setTimeZone(profile.getTimeZone());
 		newUser.setAvatarUrl(profile.getAvatarUrl());
+		if (profile.getId() != null) {
+			newUser.setIsActive(profile.getIsActive());
+			newUser.setIsDeleted(profile.getIsDeleted());
+		} else {
+			newUser.setIsActive(Boolean.TRUE);
+			newUser.setIsDeleted(Boolean.FALSE);
+		}
+
 		User savedUser = save(newUser);
-		profile.setId(savedUser.getId());
-		return userDao.saveUserProfile(profile);
+		if (savedUser != null) {
+			profile.setId(savedUser.getId());
+			profile = userDao.saveUserProfile(profile);
+			// update user role
+			if (profile != null && (profile.getRoleId() != null || profile.getRoles() != null)) {
+				UserRoleDto userRole = new UserRoleDto();
+				userRole.setUserId(profile.getId());
+				if (StringUtils.isNotBlank(profile.getOrgId())) {
+					userRole.setOrgId(Long.parseLong(profile.getOrgId()));
+				}
+				userRole.setRoleId(profile.getRoleId());
+				userRole.setRoles(profile.getRoles());
+				userDao.mapUserToRole(userRole);
+			}
+			return profile;
+		}
+		return null;
 	}
 
 	@Override
@@ -232,8 +256,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public Long checkUserNameExists(String emailId, String phoneNo) {
-		Long userId = userDao.checkUserNameExists(emailId, phoneNo);
-		return userId;
+		return userDao.checkUserNameExists(emailId, phoneNo);
 	}
 
 	@Override
@@ -329,8 +352,22 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		newUser.setIsDeleted(profile.getIsDeleted());
 		newUser.setTimeZone(profile.getTimeZone());
 		newUser.setAvatarUrl(profile.getAvatarUrl());
-		update(newUser);
-		return userDao.updateUserProfile(profile);
+		if (update(newUser) != null) {
+			userDao.updateUserProfile(profile);
+			// update user role
+			if (profile != null && (profile.getRoleId() != null || profile.getRoles() != null)) {
+				UserRoleDto userRole = new UserRoleDto();
+				userRole.setUserId(profile.getId());
+				if (StringUtils.isNotBlank(profile.getOrgId())) {
+					userRole.setOrgId(Long.parseLong(profile.getOrgId()));
+				}
+				userRole.setRoleId(profile.getRoleId());
+				userRole.setRoles(profile.getRoles());
+				userDao.mapUserToRole(userRole);
+			}
+			return profile;
+		}
+		return null;
 	}
 
 	@Override
@@ -534,6 +571,22 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserOTP", e.getMessage()));
 		}
 		return Boolean.FALSE;
+	}
+
+	@Override
+	public List<UserProfile> findAll(SearchRequest searchRequest) {
+		List<UserProfile> profileList = new ArrayList<>();
+		UserProfileMapper mapper = userDao.findAll(searchRequest);
+		if (mapper != null) {
+			Iterator<Entry<Long, UserProfile>> userItr = mapper.userMap.entrySet().iterator();
+			while (userItr.hasNext()) {
+				Entry<Long, UserProfile> entry = userItr.next();
+				if (null != entry.getValue()) {
+					profileList.add(entry.getValue());
+				}
+			}
+		}
+		return profileList;
 	}
 
 }

@@ -29,6 +29,7 @@ public class UserProfile extends User {
 	private Date updatedDate;
 	private Long updatedBy;
 	private List<Role> roles;
+	private List<Long> roleId;
 	private String countryCode;
 	private Long countryId;
 
@@ -193,6 +194,14 @@ public class UserProfile extends User {
 
 	public void setUpdatedBy(Long updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public List<Long> getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(List<Long> roleId) {
+		this.roleId = roleId;
 	}
 
 }

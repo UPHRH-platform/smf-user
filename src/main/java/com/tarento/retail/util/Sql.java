@@ -71,7 +71,8 @@ public interface Sql {
 
 		final String SELECT_ONLY_USER = "SELECT id, username, password, email_id, phone_no FROM user where username = ? or phone_no = ? ";
 
-		final String MAP_USER_TO_ROLE = "INSERT INTO user_role (user_id, role_id, org_id) VALUES (?, ?, ?)";
+		final String MAP_USER_TO_ROLE_WITH_ORG = "INSERT INTO user_role (user_id, role_id, org_id) VALUES (?, ?, ?)";
+		final String MAP_USER_TO_ROLE = "INSERT INTO user_role (user_id, role_id) VALUES (?, ?)";
 		final String MAP_USER_TO_COUNTRY = "INSERT INTO retail_user.country_user (user_id, country_id, is_default) VALUES (?, ?, ?)";
 		final String REMOVE_USER_ROLE_MAP = "DELETE FROM user_role WHERE user_id = ?";
 		final String REMOVE_USER_COUNTRY_MAP = "DELETE FROM country_user WHERE user_id = ? ";
@@ -133,9 +134,9 @@ public interface Sql {
 		final String USER_ID_IN_CONDITION = " usr.id IN ";
 		final String USER_ORG_ID = " usr.org_id = ? ";
 		final String USER_ROLE_ORG_ID = "usrrole.org_id=?";
-		final String UPDATE_USER = "UPDATE user SET email_id = ?, username = ?, phone_no = ?, is_active = ?, is_deleted = ? , timezone= ?, avatar_url where id = ? ";
+		final String UPDATE_USER = "UPDATE user SET email_id = ?, username = ?, phone_no = ?, is_active = ?, is_deleted = ? , timezone= ?, avatar_url = ? where id = ? ";
 		final String UPDATE_USER_PROFILE = "UPDATE user_profile SET first_name = ?, last_name = ?, age = ?, phone_number = ?, dob = ?, gender = ?, work_start_date = ?,  "
-				+ "work_end_date = ?, country = ?, updated_date = ?, updated_by = ?, employment_type = ?, registration_date = ?, avatar_url=?  WHERE user_id = ? ";
+				+ "work_end_date = ?, country = ?, updated_date = ?, updated_by = ?, employment_type = ?, avatar_url=?  WHERE user_id = ? ";
 		final String GET_USER_COUNT = "SELECT count(*) FROM user usr";
 		final String GET_USER_COUNT_ON_ACTIVE_STATUS = "SELECT count(*) FROM user usr where usr.is_active = ? ";
 		final String GET_USER_COUNT_FOR_ROLE = "SELECT count(*) FROM user usr LEFT JOIN user_role usrrole ON usr.id = usrrole.user_id where usrrole.role_id = ? "
@@ -173,6 +174,22 @@ public interface Sql {
 
 		final String GET_USER_ID = "SELECT id FROM user WHERE username = ? OR email_id = ? OR phone_no = ?";
 		final String GET_USER_PROFILE = "SELECT user.id, user.username, user.email_id as emailId, user.phone_no as phoneNo, user.avatar_url  as avatarUrl, user_profile.first_name, user_profile.last_name, user_profile.dob FROM user LEFT JOIN user_profile on user_profile.user_id = user.id WHERE (user.username = ? or user.email_id = ? ) and is_active is TRUE";
+	}
+
+	public interface NamedUserQueries {
+		final String USER_ORG_ID = String.format(" usr.org_id = :%s ", Constants.Parameters.ORG_ID);
+		final String TAIL_CONDITIONS_USER_ROLEIN = String.format(" usrrole.role_id IN (:%s) ",
+				Constants.Parameters.ROLE_ID);
+		final String TAIL_CONDITIONS_EMAIL_LIKE = String.format(" usr.email_id LIKE :%s ",
+				Constants.Parameters.EMAIL_ID);
+		final String TAIL_CONDITIONS_FIRSTNAME_LIKE = String.format(" prof.first_name LIKE :%s ",
+				Constants.Parameters.FIRST_NAME);
+		final String TAIL_CONDITIONS_LASTNAME_LIKE = String.format(" prof.last_name LIKE :%s ",
+				Constants.Parameters.LAST_NAME);
+		final String TAIL_CONDITIONS_COUNTRY_LIKE = String.format(" prof.country LIKE :%s ",
+				Constants.Parameters.COUNTRY);
+		final String LIMIT = String.format(" limit :%s ", Constants.Parameters.LIMIT);
+		final String OFFSET = String.format(" offset :%s ", Constants.Parameters.OFFSET);
 	}
 
 }

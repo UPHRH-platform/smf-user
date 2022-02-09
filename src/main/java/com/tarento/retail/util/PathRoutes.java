@@ -19,6 +19,7 @@ public interface PathRoutes {
 		final String NUMBER_OF_USERS_GET = "/getNumberOfUsers";
 		final String NUMBER_OF_ROLES_GET = "/getNumberOfRoles";
 		final String LIST_USER_GET = "/getAllUser";
+		final String LIST_USER_GET_V1 = "v1/getAllUser";
 		final String USER_BY_ID_GET = "/getUserById";
 		final String CREATE_UPDATE_USER_POST = "/createOrUpdate";
 		final String USER_ROLE_MAPPING_POST = "/role/mapping";
@@ -48,6 +49,7 @@ public interface PathRoutes {
 
 	public interface RoleActionRoutes {
 		final String LIST_ROLES_GET = "/roles/{orgId}";
+		final String GET_ALL_ROLES = "/getAllRoles";
 		final String GET_DEFAULT_ROLES_BY_DOMAIN = "/domainRole";
 
 		final String ADD_ROLE_POST = "/add/role";

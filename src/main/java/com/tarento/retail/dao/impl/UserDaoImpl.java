@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -29,8 +32,8 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
-import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.Role;
+import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
 import com.tarento.retail.model.UserDeviceToken;
@@ -42,6 +45,7 @@ import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleMapper;
 import com.tarento.retail.util.Constants;
 import com.tarento.retail.util.Sql;
 import com.tarento.retail.util.Sql.Common;
+import com.tarento.retail.util.Sql.NamedUserQueries;
 import com.tarento.retail.util.Sql.UserQueries;
 
 @Repository(Constants.USER_DAO)
@@ -52,6 +56,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	@Autowired
 	RoleDao roleDao;
@@ -89,6 +96,7 @@ public class UserDaoImpl implements UserDao {
 					new Object[] { id, orgId }, mapper);
 		} catch (Exception e) {
 			LOGGER.error("Encountered an exception while fetching the User By ID : " + e);
+			return null;
 		}
 		return mapper;
 	}
@@ -118,12 +126,11 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User save(final User user) {
-		User user1 = new User();
 		try {
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
 				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-					String[] returnValColumn = new String[] { "id" };
+					String[] returnValColumn = new String[] { Constants.Parameters.ID };
 					PreparedStatement statement = con.prepareStatement(UserQueries.SAVE_USER, returnValColumn);
 					statement.setString(1, user.getUsername());
 					statement.setString(2, user.getPassword());
@@ -140,7 +147,8 @@ public class UserDaoImpl implements UserDao {
 			Long id = keyHolder.getKey().longValue();
 			user.setId(id);
 		} catch (Exception e) {
-			LOGGER.error("Encountered an exception while saving new user :  " + e);
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "save user", e.getMessage()));
+			return null;
 		}
 		return user;
 	}
@@ -179,6 +187,7 @@ public class UserDaoImpl implements UserDao {
 							user.getAvatarUrl(), user.getId() });
 		} catch (Exception e) {
 			LOGGER.error("Encountered an error while updating User Object : " + e);
+			return null;
 		}
 		return user;
 	}
@@ -309,36 +318,38 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Boolean mapUserToRole(UserRoleDto userRole) {
-		try {
-			jdbcTemplate.update(UserQueries.REMOVE_USER_ROLE_MAP, new Object[] { userRole.getUserId() });
-		} catch (Exception ex) {
-			LOGGER.error("Encountered an exception while removing the User Role mapping : " + ex);
-		}
+		if (userRole.getRoles() != null || userRole.getRoleId() != null) {
+			try {
+				jdbcTemplate.update(UserQueries.REMOVE_USER_ROLE_MAP, new Object[] { userRole.getUserId() });
+			} catch (Exception ex) {
+				LOGGER.error("Encountered an exception while removing the User Role mapping : " + ex);
+			}
 
-		int[] values = null;
-		List<Role> roleList = userRole.getRoles();
-		if (roleList.isEmpty()) {
-			return true;
-		}
-		try {
-			values = jdbcTemplate.batchUpdate(UserQueries.MAP_USER_TO_ROLE, new BatchPreparedStatementSetter() {
-				@Override
-				public void setValues(java.sql.PreparedStatement statement, int i) throws SQLException {
-					Role role = roleList.get(i);
-					statement.setLong(1, userRole.getUserId());
-					statement.setLong(2, role.getId());
-					statement.setLong(3, userRole.getOrgId());
-				}
+			try {
+				Boolean updateByRoleId = userRole.getRoleId() != null && userRole.getRoleId().size() > 0;
+				List<Role> roleList = userRole.getRoles();
+				String query = (userRole.getOrgId() != null && userRole.getOrgId() != 0)
+						? UserQueries.MAP_USER_TO_ROLE_WITH_ORG
+						: UserQueries.MAP_USER_TO_ROLE;
+				jdbcTemplate.batchUpdate(query, new BatchPreparedStatementSetter() {
+					@Override
+					public void setValues(java.sql.PreparedStatement statement, int i) throws SQLException {
+						statement.setLong(1, userRole.getUserId());
+						statement.setLong(2, updateByRoleId ? userRole.getRoleId().get(i) : roleList.get(i).getId());
+						if (userRole.getOrgId() != null && userRole.getOrgId() != 0) {
+							statement.setLong(3, userRole.getOrgId());
+						}
+					}
 
-				public int getBatchSize() {
-					return roleList.size();
-				}
-			});
-		} catch (Exception ex) {
-			LOGGER.error("Exception Occured while adding Roles to User : " + ex);
-		}
-		if (values.length > 0) {
-			return true;
+					public int getBatchSize() {
+						return updateByRoleId ? userRole.getRoleId().size() : roleList.size();
+					}
+				});
+				return true;
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				LOGGER.error("Exception Occured while adding Roles to User : " + ex);
+			}
 		}
 		return false;
 	}
@@ -349,7 +360,7 @@ public class UserDaoImpl implements UserDao {
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
 				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-					String[] returnValColumn = new String[] { "id" };
+					String[] returnValColumn = new String[] { Constants.Parameters.ID };
 					PreparedStatement statement = con.prepareStatement(UserQueries.INSERT_USER_PROFILE,
 							returnValColumn);
 					statement.setLong(1, profile.getId());
@@ -377,18 +388,18 @@ public class UserDaoImpl implements UserDao {
 					} else {
 						statement.setDate(13, new java.sql.Date(new Date().getTime()));
 					}
-					statement.setLong(14, profile.getCreatedBy());
+					statement.setLong(14, (profile.getCreatedBy() != null) ? profile.getCreatedBy() : 0);
 					statement.setDate(15, new java.sql.Date(new Date().getTime()));
-					statement.setLong(16, profile.getUpdatedBy());
+					statement.setLong(16, (profile.getUpdatedBy() != null) ? profile.getUpdatedBy() : 0);
 					statement.setDate(17, new java.sql.Date(new Date().getTime()));
 					statement.setString(18, profile.getEmploymentType());
 					return statement;
 				}
 			}, keyHolder);
-			Long id = keyHolder.getKey().longValue();
-			profile.setProfileId(id);
 		} catch (Exception e) {
-			LOGGER.error("Encountered an error while creatin User Profile : " + e.getMessage());
+			e.printStackTrace();
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "saveUserProfile", e.getMessage()));
+			return null;
 		}
 		return profile;
 	}
@@ -460,16 +471,14 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public UserProfile updateUserProfile(UserProfile profile) {
 		try {
-			if (profile.getRegistrationDate() != null) {
-				jdbcTemplate.update(UserQueries.UPDATE_USER_PROFILE,
-						new Object[] { profile.getFirstName(), profile.getLastName(), profile.getAge(),
-								profile.getPhoneNo(), profile.getDob(), profile.getGender(), profile.getStartDate(),
-								profile.getEndDate(), profile.getCountry(), new java.sql.Date(new Date().getTime()), 1L,
-								profile.getEmploymentType(), new java.sql.Date(profile.getRegistrationDate().getTime()),
-								profile.getAvatarUrl(), profile.getId() });
-			}
+			jdbcTemplate.update(UserQueries.UPDATE_USER_PROFILE,
+					new Object[] { profile.getFirstName(), profile.getLastName(), profile.getAge(),
+							profile.getPhoneNo(), profile.getDob(), profile.getGender(), profile.getStartDate(),
+							profile.getEndDate(), profile.getCountry(), new java.sql.Date(new Date().getTime()), 1L,
+							profile.getEmploymentType(), profile.getAvatarUrl(), profile.getId() });
 		} catch (Exception e) {
 			LOGGER.error("Encountered an error while updating User Profile Object : " + e.getMessage());
+			return null;
 		}
 		return profile;
 	}
@@ -835,5 +844,98 @@ public class UserDaoImpl implements UserDao {
 			LOGGER.error("Encountered an Exception while fetching the User by Username : " + e);
 		}
 		return null;
+	}
+
+	@Override
+	public UserProfileMapper findAll(SearchRequest searchRequest) {
+		UserProfileMapper mapper = new SqlDataMapper().new UserProfileMapper();
+		try {
+			Map<String, Object> paramMap = new HashMap<>();
+			String queryToExecute = BuildMyQuery(searchRequest, paramMap);
+			System.out.println(queryToExecute);
+			System.out.println(paramMap);
+			namedParameterJdbcTemplate.query(queryToExecute, paramMap, mapper);
+		} catch (Exception e) {
+			LOGGER.error("Encountered an exception while fetching the User Profile : " + e);
+		}
+		return mapper;
+	}
+
+	/**
+	 * Dynamic query builder
+	 * 
+	 * @param searchRequest
+	 *            SearchRequest
+	 * @param paramMap
+	 *            Map<String, Object>
+	 * @return String
+	 */
+	private String BuildMyQuery(SearchRequest searchRequest, Map<String, Object> paramMap) {
+		StringBuilder builder = new StringBuilder(UserQueries.USER_PROFILE_FETCH);
+
+		Boolean condition = Boolean.FALSE;
+		// orgId
+		if (searchRequest.getOrgId() != null && searchRequest.getOrgId() > 0) {
+			condition = addQueryCondition(builder, condition);
+			builder.append(NamedUserQueries.USER_ORG_ID);
+			paramMap.put(Constants.Parameters.ORG_ID, searchRequest.getOrgId());
+		}
+		// active
+		if (searchRequest.getActive() != null) {
+			condition = addQueryCondition(builder, condition);
+			if (searchRequest.getActive()) {
+				builder.append(UserQueries.TAIL_CONDITIONS_USER_ACTIVE);
+			} else {
+				builder.append(UserQueries.TAIL_CONDITIONS_USER_INACTIVE);
+			}
+			paramMap.put(Constants.Parameters.ACTIVE, searchRequest.getActive());
+		}
+		// roleId
+		if (searchRequest.getRoleId() != null && searchRequest.getRoleId().size() > 0) {
+			condition = addQueryCondition(builder, condition);
+			builder.append(NamedUserQueries.TAIL_CONDITIONS_USER_ROLEIN);
+			paramMap.put(Constants.Parameters.ROLE_ID, searchRequest.getRoleId());
+		}
+		// keyword search
+		if (StringUtils.isNotBlank(searchRequest.getKeyword())) {
+			condition = addQueryCondition(builder, condition);
+			String keyword = "%" + searchRequest.getKeyword() + "%";
+			builder.append(Common.OPEN_BRACE + NamedUserQueries.TAIL_CONDITIONS_EMAIL_LIKE + Common.OR_CONDITION
+					+ NamedUserQueries.TAIL_CONDITIONS_FIRSTNAME_LIKE + Common.OR_CONDITION
+					+ NamedUserQueries.TAIL_CONDITIONS_LASTNAME_LIKE + Common.OR_CONDITION
+					+ NamedUserQueries.TAIL_CONDITIONS_COUNTRY_LIKE + Common.CLOSE_BRACE);
+			paramMap.put(Constants.Parameters.EMAIL_ID, keyword);
+			paramMap.put(Constants.Parameters.FIRST_NAME, keyword);
+			paramMap.put(Constants.Parameters.LAST_NAME, keyword);
+			paramMap.put(Constants.Parameters.COUNTRY, keyword);
+		}
+
+		// limit & offset
+		if (searchRequest.getLimit() > 0) {
+			builder.append(NamedUserQueries.LIMIT);
+			paramMap.put(Constants.Parameters.LIMIT, searchRequest.getLimit());
+		}
+		if (searchRequest.getOffset() > 0) {
+			builder.append(NamedUserQueries.OFFSET);
+			paramMap.put(Constants.Parameters.OFFSET, searchRequest.getOffset());
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * Appends Where & and condition to the query builder
+	 * 
+	 * @param builder
+	 *            StringBuilder
+	 * @param condition
+	 *            Boolean
+	 */
+	public Boolean addQueryCondition(StringBuilder builder, Boolean condition) {
+		if (!condition) {
+			builder.append(Common.WHERE_CLAUSE);
+		} else {
+			builder.append(Common.AND_CONDITION);
+		}
+		return Boolean.TRUE;
 	}
 }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tarento.retail.dto.CountryDto;
+import com.google.gson.Gson;
 import com.tarento.retail.dto.CreateOrgResponse;
 import com.tarento.retail.dto.RoleActionDto;
 import com.tarento.retail.model.Action;
@@ -31,7 +31,6 @@ import com.tarento.retail.util.CustomResponse;
 import com.tarento.retail.util.PathRoutes;
 import com.tarento.retail.util.ResponseGenerator;
 import com.tarento.retail.util.ResponseMessages;
-import com.tarento.retail.util.Sql.RoleAction;
 
 @RestController
 @RequestMapping(PathRoutes.USER_ACTIONS_URL)
@@ -43,6 +42,16 @@ public class RoleActionController {
 	@RequestMapping(value = PathRoutes.RoleActionRoutes.LIST_ROLES_GET, method = RequestMethod.GET)
 	public List<Role> listRoles(@PathVariable(value = "orgId") Long orgCode) {
 		return roleActionService.getAllRoles(orgCode);
+	}
+
+	@RequestMapping(value = PathRoutes.RoleActionRoutes.GET_ALL_ROLES, method = RequestMethod.GET)
+	public List<Role> listRoles(@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo) {
+		Long orgId = null;
+		if (StringUtils.isNotBlank(xUserInfo)) {
+			User userInfo = new Gson().fromJson(xUserInfo, User.class);
+			orgId = Long.parseLong(userInfo.getOrgId());
+		}
+		return roleActionService.getAllRoles(orgId);
 	}
 
 	@RequestMapping(value = PathRoutes.RoleActionRoutes.GET_DEFAULT_ROLES_BY_DOMAIN, method = RequestMethod.GET)

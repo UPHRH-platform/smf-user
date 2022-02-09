@@ -39,6 +39,7 @@ import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
 import com.tarento.retail.model.LoginUser;
+import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserDeviceToken;
 import com.tarento.retail.model.UserProfile;
@@ -51,6 +52,7 @@ import com.tarento.retail.util.Constants;
 import com.tarento.retail.util.PathRoutes;
 import com.tarento.retail.util.ResponseGenerator;
 import com.tarento.retail.util.ResponseMessages;
+import com.tarento.retail.util.ValidationService;
 
 @RestController
 @RequestMapping(PathRoutes.USER_ACTIONS_URL)
@@ -64,6 +66,9 @@ public class UserController {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+
+	@Autowired
+	private ValidationService validationService;
 
 	public static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -142,45 +147,38 @@ public class UserController {
 
 	@RequestMapping(value = PathRoutes.UserRoutes.USER_BY_ID_GET, method = RequestMethod.GET)
 	public String getOne(@RequestParam(value = "id", required = true) Long id,
-			@RequestParam(value = "orgId", required = true) Long orgId) throws JsonProcessingException {
+			@RequestParam(value = "orgId", required = false) Long orgId,
+			@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo)
+			throws JsonProcessingException {
+		if (StringUtils.isNotBlank(xUserInfo)) {
+			User userInfo = new Gson().fromJson(xUserInfo, User.class);
+			orgId = Long.parseLong(userInfo.getOrgId());
+		}
 		return ResponseGenerator.successResponse(userService.findById(id, orgId));
 	}
 
 	@RequestMapping(value = PathRoutes.UserRoutes.CREATE_UPDATE_USER_POST, method = RequestMethod.POST)
 	public String saveUser(@RequestBody UserProfile profile,
+			@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo,
 			@RequestHeader(value = Constants.AUTH_HEADER) String authToken) throws JsonProcessingException {
 
-		Boolean userTokenAvailable = userService.findUserByToken(authToken);
-		String username = "";
+		String validation = validationService.validateUserUpsert(profile);
+		if (validation.equals(Constants.SUCCESS)) {
+			if (StringUtils.isNotBlank(xUserInfo)) {
+				User userInfo = new Gson().fromJson(xUserInfo, User.class);
+				profile.setCreatedBy(userInfo.getId());
+				profile.setUpdatedBy(userInfo.getId());
+				profile.setOrgId(userInfo.getOrgId());
+			}
+			profile.setUsername(profile.getEmailId());
 
-		if (userTokenAvailable) {
-			username = jwtTokenUtil.getUsernameFromToken(authToken);
-
-			User user = userService.findOne(username);
-
-			if (profile != null) {
-				if (StringUtils.isNotBlank(profile.getEmailId())) {
-					profile.setUsername(profile.getEmailId());
-				} else {
-					ResponseGenerator.failureResponse(ResponseMessages.ErrorMessages.EMAIL_MANDATORY);
-				}
-				Long userId = userService.checkUserNameExists(profile.getEmailId(), profile.getPhoneNo());
-				if (profile.getId() != null && profile.getId() > 0) {
-					if (userId.equals(profile.getId())) {
-						return ResponseGenerator.successResponse(userService.updateUserProfile(profile));
-					} else {
-						return ResponseGenerator
-								.failureResponse(ResponseMessages.ErrorMessages.EMAIL_PHONE_ALREADY_EXISTS);
-					}
-				} else {
-					if (userId != null && userId > 0) {
-						return ResponseGenerator
-								.failureResponse(ResponseMessages.ErrorMessages.EMAIL_PHONE_ALREADY_EXISTS);
-					}
-				}
-				profile.setCreatedBy(user.getId());
-				profile.setUpdatedBy(user.getId());
+			if (profile.getId() != null && profile.getId() > 0) {
+				profile = userService.updateUserProfile(profile);
+			} else {
 				profile = userService.saveUserProfile(profile);
+			}
+			// update user country
+			if (profile != null && profile.getCountryId() != null) {
 				UserCountryDto userCountryDto = new UserCountryDto();
 				userCountryDto.setUserId(profile.getId());
 				List<Country> country = new ArrayList<>();
@@ -188,10 +186,17 @@ public class UserController {
 				c.setId(profile.getCountryId());
 				country.add(c);
 				userCountryDto.setCountries(country);
-				return ResponseGenerator.successResponse(userService.mapUserToCountry(userCountryDto));
+				if (!userService.mapUserToCountry(userCountryDto)) {
+					logger.error("Failed to update user country");
+				}
 			}
+
+			if (profile != null) {
+				return ResponseGenerator.successResponse(profile);
+			}
+			return ResponseGenerator.failureResponse(Constants.PROCESS_FAIL);
 		}
-		return ResponseGenerator.failureResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString());
+		return ResponseGenerator.failureResponse(validation);
 	}
 
 	@RequestMapping(value = PathRoutes.UserRoutes.USER_DEVICE_TOKEN_POST, method = RequestMethod.POST)
@@ -221,6 +226,26 @@ public class UserController {
 			@RequestParam(value = "orgId", required = true) Long orgId) throws JsonProcessingException {
 		return ResponseGenerator.successResponse(
 				userService.findAll(pageNumber, numberOfRecords, active, keyword, roles, countryCode, orgId));
+	}
+
+	@RequestMapping(value = PathRoutes.UserRoutes.LIST_USER_GET_V1, method = RequestMethod.POST)
+	public String listUserV1(@RequestBody SearchRequest searchRequest,
+			@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo)
+			throws JsonProcessingException {
+		if (StringUtils.isNotBlank(xUserInfo)) {
+			User userInfo = new Gson().fromJson(xUserInfo, User.class);
+			if (StringUtils.isNotBlank(userInfo.getOrgId())) {
+				searchRequest.setOrgId(Long.parseLong(userInfo.getOrgId()));
+			}
+		}
+		if (searchRequest.getOrgId() == null || !(searchRequest.getOrgId() > 0)) {
+			return ResponseGenerator.failureResponse(ResponseMessages.ErrorMessages.ORG_ID_UNAVAILABLE);
+		}
+		List<UserProfile> profile = userService.findAll(searchRequest);
+		if (profile != null) {
+			return ResponseGenerator.successResponse(profile);
+		}
+		return ResponseGenerator.failureResponse(Constants.PROCESS_FAIL);
 	}
 
 	@RequestMapping(value = PathRoutes.UserRoutes.REMOVE_ROLE_MAPPING, method = RequestMethod.POST)

@@ -17,6 +17,7 @@ import com.tarento.retail.model.Country;
 import com.tarento.retail.model.LoginAuthentication;
 import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.Role;
+import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
 import com.tarento.retail.model.UserDeviceToken;
@@ -233,5 +234,7 @@ public interface UserService {
 	Boolean requestOTP(String email);
 
 	Boolean validateUserOTP(String username, String otp);
+
+	public List<UserProfile> findAll(SearchRequest searchRequest);
 
 }

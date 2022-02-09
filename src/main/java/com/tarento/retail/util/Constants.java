@@ -24,8 +24,8 @@ public class Constants {
 	/**
 	 * Query Parameters and Response Parameters
 	 */
-	public static String USER_INFO_HEADER = "x-user-info";
-	public static String SUCCESS = "success";
+	public static final String USER_INFO_HEADER = "x-user-info";
+	public static final String SUCCESS = "success";
 	public static String ASC = "asc";
 	public static String DESC = "desc";
 	public static String TRUE = "true";
@@ -84,6 +84,19 @@ public class Constants {
 	 */
 	public static final String OTP_EMAIL_SUBJECT = "UP SMF - OTP request";
 	public static final String OTP_EMAIL_BODY = "UP SMF login OTP: %s. Valid for 5 minutes";
+
+	public interface Parameters {
+		public static final String ID = "id";
+		public static final String ORG_ID = "orgId";
+		public static final String ACTIVE = "active";
+		public static final String ROLE_ID = "roleId";
+		public static final String EMAIL_ID = "emailId";
+		public static final String FIRST_NAME = "firstName";
+		public static final String LAST_NAME = "lastName";
+		public static final String COUNTRY = "country";
+		public static final String LIMIT = "limit";
+		public static final String OFFSET = "offset";
+	}
 
 	public interface EmailTemplate {
 		public static final String OTP = "/otp_template.vm";
