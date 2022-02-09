@@ -909,7 +909,29 @@ public class UserDaoImpl implements UserDao {
 			paramMap.put(Constants.Parameters.LAST_NAME, keyword);
 			paramMap.put(Constants.Parameters.COUNTRY, keyword);
 		}
-
+		// dynamic key value search
+		if (searchRequest.getSearch() != null && searchRequest.getSearch().size() > 0) {
+			for (Map.Entry<String, Object> entry : searchRequest.getSearch().entrySet()) {
+				condition = addQueryCondition(builder, condition);
+				if (entry.getValue() instanceof List) {
+					if (Constants.UserSearchFields.MAPPING.containsKey(entry.getKey())) {
+						builder.append(Constants.UserSearchFields.MAPPING.get(entry.getKey()));
+					} else {
+						builder.append(entry.getKey());
+					}
+					builder.append(NamedUserQueries.IN_CLAUSE);
+					paramMap.put(Constants.Parameters.IN_VALUE, entry.getValue());
+				} else {
+					if (Constants.UserSearchFields.MAPPING.containsKey(entry.getKey())) {
+						builder.append(Constants.UserSearchFields.MAPPING.get(entry.getKey()));
+					} else {
+						builder.append(entry.getKey());
+					}
+					builder.append(NamedUserQueries.APPEND_VALUE);
+					paramMap.put(Constants.Parameters.VALUE, entry.getValue());
+				}
+			}
+		}
 		// limit & offset
 		if (searchRequest.getLimit() > 0) {
 			builder.append(NamedUserQueries.LIMIT);

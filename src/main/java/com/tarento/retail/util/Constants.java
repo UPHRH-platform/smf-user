@@ -1,5 +1,8 @@
 package com.tarento.retail.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Constants {
 
 	/**
@@ -96,6 +99,8 @@ public class Constants {
 		public static final String COUNTRY = "country";
 		public static final String LIMIT = "limit";
 		public static final String OFFSET = "offset";
+		public static final String IN_VALUE = "inValues";
+		public static final String VALUE = "value";
 	}
 
 	public interface EmailTemplate {
@@ -176,5 +181,13 @@ public class Constants {
 			this.name = name;
 		}
 
+	}
+
+	public interface UserSearchFields {
+		public static final Map<String, String> MAPPING = new HashMap<String, String>() {
+			{
+				put("userId", "usr.id");
+			}
+		};
 	}
 }

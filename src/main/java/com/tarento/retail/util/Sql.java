@@ -190,6 +190,9 @@ public interface Sql {
 				Constants.Parameters.COUNTRY);
 		final String LIMIT = String.format(" limit :%s ", Constants.Parameters.LIMIT);
 		final String OFFSET = String.format(" offset :%s ", Constants.Parameters.OFFSET);
+
+		final String IN_CLAUSE = String.format(" IN (:%s)", Constants.Parameters.IN_VALUE);
+		final String APPEND_VALUE = String.format(" = :%s ", Constants.Parameters.VALUE);
 	}
 
 }

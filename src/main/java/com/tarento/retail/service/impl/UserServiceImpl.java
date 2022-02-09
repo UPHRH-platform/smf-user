@@ -156,10 +156,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public User save(User user) {
-		if (StringUtils.isNotBlank(user.getPassword())) {
-			String encryptedPassword = bcryptEncoder.encode(user.getPassword());
-			user.setPassword(encryptedPassword);
+		if (StringUtils.isBlank(user.getPassword())) {
+			user.setPassword("UP-SMF#User");
 		}
+		String encryptedPassword = bcryptEncoder.encode(user.getPassword());
+		user.setPassword(encryptedPassword);
 		return userDao.save(user);
 	}
 
