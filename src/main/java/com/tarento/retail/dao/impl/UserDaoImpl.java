@@ -182,7 +182,8 @@ public class UserDaoImpl implements UserDao {
 	public User update(final User user) {
 		try {
 			jdbcTemplate.update(UserQueries.UPDATE_USER,
-					new Object[] { user.getEmailId(), user.getUsername(), user.getPhoneNo(), user.getIsActive(),
+					new Object[] { user.getEmailId(), user.getUsername(), user.getPhoneNo(),
+							(user.getIsActive() != null) ? user.getIsActive() : Boolean.TRUE,
 							(user.getIsDeleted() != null) ? user.getIsDeleted() : Boolean.FALSE, user.getTimeZone(),
 							user.getAvatarUrl(), user.getId() });
 		} catch (Exception e) {
