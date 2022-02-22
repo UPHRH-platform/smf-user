@@ -38,6 +38,7 @@ public interface PathRoutes {
 		final String GET_USERS_BY_MASTER_ROLE = "getUsersByMasterRole";
 		final String MAP_USER_MASTER_ROLE_COUNTRY_ORG = "mapUserMasterRoleCountryOrg";
 		final String REQUEST_OTP = "/requestOTP";
+		final String NUMBER_OF_USERS_ROLES_GET = "/getNumberOfUsersAndRoles";
 	}
 
 	public interface AuthenticationRoutes {

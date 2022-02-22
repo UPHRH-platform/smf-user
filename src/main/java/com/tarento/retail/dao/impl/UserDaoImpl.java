@@ -32,6 +32,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
@@ -960,5 +961,16 @@ public class UserDaoImpl implements UserDao {
 			builder.append(Common.AND_CONDITION);
 		}
 		return Boolean.TRUE;
+	}
+
+	@Override
+	public List<KeyValue> getNumberOfUsersAndRoles() {
+		List<KeyValue> userList = new ArrayList<>(); 
+		try {
+			userList = jdbcTemplate.query(UserQueries.GET_NUMBER_USER_ROLES, new SqlDataMapper().new UserRoleCountMapper());
+		} catch (Exception e) {
+			LOGGER.error("Encountered an Exception while fetching the User by Username : " + e);
+		}
+		return userList;
 	}
 }
