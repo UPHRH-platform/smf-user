@@ -653,7 +653,7 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Long fetchAuthTokenReference(String authToken) {
-		authToken = authToken.split(" ")[1];
+		authToken = authToken.replace(Constants.TOKEN_PREFIX, "").replace(Constants.TOKEN_PREFIX.toLowerCase(), "");
 		Long authTokenRef = 0L;
 		try {
 			authTokenRef = jdbcTemplate.queryForObject(UserQueries.FETCH_AUTH_TOKEN_REF, new Object[] { authToken },
@@ -964,9 +964,10 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<KeyValue> getNumberOfUsersAndRoles() {
-		List<KeyValue> userList = new ArrayList<>(); 
+		List<KeyValue> userList = new ArrayList<>();
 		try {
-			userList = jdbcTemplate.query(UserQueries.GET_NUMBER_USER_ROLES, new SqlDataMapper().new UserRoleCountMapper());
+			userList = jdbcTemplate.query(UserQueries.GET_NUMBER_USER_ROLES,
+					new SqlDataMapper().new UserRoleCountMapper());
 		} catch (Exception e) {
 			LOGGER.error("Encountered an Exception while fetching the User by Username : " + e);
 		}
