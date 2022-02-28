@@ -10,12 +10,10 @@ import com.tarento.retail.dto.MasterRoleDto;
 import com.tarento.retail.dto.UserCountryDto;
 import com.tarento.retail.dto.UserDto;
 import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
-import com.tarento.retail.dto.UserMasterRoleDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
-import com.tarento.retail.model.LoginAuthentication;
-import com.tarento.retail.model.LoginDto;
+import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
@@ -236,5 +234,7 @@ public interface UserService {
 	Boolean validateUserOTP(String username, String otp);
 
 	public List<UserProfile> findAll(SearchRequest searchRequest);
+	
+	List<KeyValue> getNumberOfUsersAndRoles();
 
 }

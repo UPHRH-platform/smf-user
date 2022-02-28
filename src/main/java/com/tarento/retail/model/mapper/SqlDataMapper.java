@@ -18,6 +18,7 @@ import com.tarento.retail.dto.UserDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.ActionRole;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
@@ -308,6 +309,15 @@ public class SqlDataMapper {
 			action.setServiceCode(rs.getString("service_code"));
 			action.setUrl(rs.getString("url"));
 			return action;
+		}
+	}
+	
+	public class UserRoleCountMapper implements RowMapper<KeyValue> {
+		public KeyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
+			KeyValue keyValue = new KeyValue(); 
+			keyValue.setKey(rs.getString("roleName"));
+			keyValue.setValue(rs.getObject("numberOfUsers"));
+			return keyValue;
 		}
 	}
 

@@ -38,6 +38,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.LoginAuthentication;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.SearchRequest;
@@ -588,6 +589,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			}
 		}
 		return profileList;
+	}
+
+	@Override
+	public List<KeyValue> getNumberOfUsersAndRoles() {
+		return userDao.getNumberOfUsersAndRoles();
 	}
 
 }

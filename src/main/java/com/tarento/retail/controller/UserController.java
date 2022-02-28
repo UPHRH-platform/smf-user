@@ -144,6 +144,11 @@ public class UserController {
 	public String getNumberOfRoles() throws JsonProcessingException {
 		return ResponseGenerator.successResponse(userService.getNumberOfRoles());
 	}
+	
+	@RequestMapping(value = PathRoutes.UserRoutes.NUMBER_OF_USERS_ROLES_GET, method = RequestMethod.GET)
+	public String getNumberOfUserAndRoles() throws JsonProcessingException {
+		return ResponseGenerator.successResponse(userService.getNumberOfUsersAndRoles());
+	}
 
 	@RequestMapping(value = PathRoutes.UserRoutes.USER_BY_ID_GET, method = RequestMethod.GET)
 	public String getOne(@RequestParam(value = "id", required = true) Long id,

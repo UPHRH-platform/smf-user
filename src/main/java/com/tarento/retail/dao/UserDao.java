@@ -10,6 +10,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserAuthentication;
@@ -254,5 +255,7 @@ public interface UserDao {
 	UserProfile getUserProfile(String username);
 
 	public UserProfileMapper findAll(SearchRequest searchRequest);
+	
+	public List<KeyValue> getNumberOfUsersAndRoles();
 
 }
