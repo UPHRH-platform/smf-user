@@ -144,7 +144,7 @@ public class UserController {
 	public String getNumberOfRoles() throws JsonProcessingException {
 		return ResponseGenerator.successResponse(userService.getNumberOfRoles());
 	}
-	
+
 	@RequestMapping(value = PathRoutes.UserRoutes.NUMBER_OF_USERS_ROLES_GET, method = RequestMethod.GET)
 	public String getNumberOfUserAndRoles() throws JsonProcessingException {
 		return ResponseGenerator.successResponse(userService.getNumberOfUsersAndRoles());
@@ -214,7 +214,7 @@ public class UserController {
 		}
 		Long authTokenRef = userService.fetchAuthTokenReference(thisUser.getAuthToken());
 		Boolean updateStatus = userService.updateUserDeviceToken(thisUser.getId(), deviceToken.getDeviceToken(),
-				authTokenRef);
+				deviceToken.getDeviceId(), authTokenRef);
 		if (updateStatus)
 			return ResponseGenerator.successResponse("Success");
 

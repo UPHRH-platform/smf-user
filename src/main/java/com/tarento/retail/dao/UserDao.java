@@ -201,7 +201,7 @@ public interface UserDao {
 	 * @param deviceToken
 	 * @return
 	 */
-	public Boolean insertUserDeviceToken(Long userId, String deviceToken, Long authTokenRef);
+	public Boolean insertUserDeviceToken(Long userId, String deviceToken, String deviceId, Long authTokenRef);
 
 	/**
 	 * This method receives the List of User IDs and fetches the FCM Device Token
@@ -255,7 +255,7 @@ public interface UserDao {
 	UserProfile getUserProfile(String username);
 
 	public UserProfileMapper findAll(SearchRequest searchRequest);
-	
+
 	public List<KeyValue> getNumberOfUsersAndRoles();
 
 }

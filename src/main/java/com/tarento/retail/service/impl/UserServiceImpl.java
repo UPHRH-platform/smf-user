@@ -418,8 +418,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 
 	@Override
-	public Boolean updateUserDeviceToken(Long userId, String deviceToken, Long authTokenRef) {
-		return userDao.insertUserDeviceToken(userId, deviceToken, authTokenRef);
+	public Boolean updateUserDeviceToken(Long userId, String deviceToken, String deviceId, Long authTokenRef) {
+		return userDao.insertUserDeviceToken(userId, deviceToken, deviceId, authTokenRef);
 	}
 
 	@Override

@@ -191,7 +191,7 @@ public interface UserService {
 
 	Boolean checkUserTokenExists(Long userId, String deviceToken);
 
-	Boolean updateUserDeviceToken(Long userId, String deviceToken, Long authTokenRef);
+	Boolean updateUserDeviceToken(Long userId, String deviceToken, String deviceId, Long authTokenRef);
 
 	/**
 	 * This method receives the list of Users IDs and passes the same to Data layer
@@ -234,7 +234,7 @@ public interface UserService {
 	Boolean validateUserOTP(String username, String otp);
 
 	public List<UserProfile> findAll(SearchRequest searchRequest);
-	
+
 	List<KeyValue> getNumberOfUsersAndRoles();
 
 }

@@ -628,10 +628,10 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public Boolean insertUserDeviceToken(Long userId, String deviceToken, Long authTokenRef) {
+	public Boolean insertUserDeviceToken(Long userId, String deviceToken, String deviceId, Long authTokenRef) {
 		try {
 			jdbcTemplate.update(UserQueries.INSERT_USER_DEVICE_TOKEN,
-					new Object[] { userId, deviceToken, new Date().getTime(), authTokenRef });
+					new Object[] { userId, deviceToken, deviceId, new Date().getTime(), authTokenRef });
 		} catch (Exception e) {
 			LOGGER.error("Encountered an error while inserting new User Device Token : " + e.getMessage());
 			return false;

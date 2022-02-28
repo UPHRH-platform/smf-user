@@ -145,7 +145,7 @@ public interface Sql {
 
 		final String INVALIDATE_TOKEN = "DELETE from user_authentication WHERE auth_token = ? ";
 		final String CHECK_USER_DEVICE_TOKEN = "SELECT COUNT(*) FROM user_device WHERE user_id = ? AND device_token = ? ";
-		final String INSERT_USER_DEVICE_TOKEN = "INSERT INTO user_device (user_id, device_token, created_date, user_auth_id) VALUES (?,?,?,?) ";
+		final String INSERT_USER_DEVICE_TOKEN = "INSERT INTO user_device (user_id, device_token, device_id, created_date, user_auth_id) VALUES (?,?,?,?,?) ";
 		final String UPDATE_USER_DEVICE_TOKEN = "UPDATE user_device SET device_token = ?, created_date = ? WHERE user_id = ? ";
 		final String FETCH_USER_DEVICE_TOKEN = " SELECT device.id, device.user_id, device.device_token FROM user_device device WHERE device.user_id IN ";
 		final String USER_DEVICE_ROLE_CONDITION = " and exists (select 1 from user_role where user_id = device.user_id and role_id IN (1,2)) "
@@ -174,7 +174,7 @@ public interface Sql {
 
 		final String GET_USER_ID = "SELECT id FROM user WHERE username = ? OR email_id = ? OR phone_no = ?";
 		final String GET_USER_PROFILE = "SELECT user.id, user.username, user.email_id as emailId, user.phone_no as phoneNo, user.avatar_url  as avatarUrl, user_profile.first_name, user_profile.last_name, user_profile.dob FROM user LEFT JOIN user_profile on user_profile.user_id = user.id WHERE (user.username = ? or user.email_id = ? ) and is_active is TRUE";
-		final String GET_NUMBER_USER_ROLES = "SELECT count(*) as 'numberOfUsers', r.role_name as 'roleName' from user usr LEFT JOIN user_role ur ON usr.id = ur.user_id LEFT JOIN role r ON ur.role_id = r.id where r.id > 2090 group by r.role_name "; 
+		final String GET_NUMBER_USER_ROLES = "SELECT count(*) as 'numberOfUsers', r.role_name as 'roleName' from user usr LEFT JOIN user_role ur ON usr.id = ur.user_id LEFT JOIN role r ON ur.role_id = r.id where r.id > 2090 group by r.role_name ";
 	}
 
 	public interface NamedUserQueries {
