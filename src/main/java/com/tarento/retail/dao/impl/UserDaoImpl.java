@@ -398,7 +398,6 @@ public class UserDaoImpl implements UserDao {
 				}
 			}, keyHolder);
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "saveUserProfile", e.getMessage()));
 			return null;
 		}

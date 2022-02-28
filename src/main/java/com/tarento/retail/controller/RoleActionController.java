@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,8 @@ import com.tarento.retail.util.ResponseMessages;
 @RequestMapping(PathRoutes.USER_ACTIONS_URL)
 public class RoleActionController {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger(RoleActionController.class);
+
 	@Autowired
 	private RoleActionService roleActionService;
 
@@ -66,7 +70,7 @@ public class RoleActionController {
 		try {
 			return ResponseGenerator.successResponse(roleActionService.getAllRolesByDomain(orgDomain));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LOGGER.error("Exception in listRolesByDomain :" + e.getMessage());
 		}
 		return ResponseGenerator.failureResponse(ResponseMessages.ErrorMessages.ORG_DOMAIN_CODE_UNAVAILABLE);
 	}

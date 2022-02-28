@@ -313,7 +313,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 				return false;
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "uploadFile", e.getMessage()));
 			return false;
 		}
 	}

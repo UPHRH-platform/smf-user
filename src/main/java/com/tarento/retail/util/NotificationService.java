@@ -77,7 +77,6 @@ public class NotificationService {
 			transport.close();
 			return Boolean.TRUE;
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOGGER.error(String.format("Exception in %s : %s", "sendMail", e.getMessage()));
 		}
 		return Boolean.FALSE;
