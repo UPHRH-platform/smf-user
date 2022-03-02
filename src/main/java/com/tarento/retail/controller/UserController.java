@@ -39,6 +39,7 @@ import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
 import com.tarento.retail.model.LoginUser;
+import com.tarento.retail.model.Role;
 import com.tarento.retail.model.SearchRequest;
 import com.tarento.retail.model.User;
 import com.tarento.retail.model.UserDeviceToken;
@@ -437,7 +438,7 @@ public class UserController {
 			userDto.setId(user.getId());
 			userDto.setUserName(user.getUsername());
 			userDto.setEmailId(user.getEmailId());
-			userDto.setRoles(userService.findAllRolesByUser(user.getId(), user.getOrgId()));
+			userDto.setRoles(userService.findAllRolesByUser(user.getId(), user.getOrgId(), null));
 			userDto.setActions(userService.findAllActionsByUser(user.getId(), user.getOrgId()));
 			userDto.setOrgId(user.getOrgId());
 			userDto.setTimeZone(user.getTimeZone());
@@ -541,10 +542,31 @@ public class UserController {
 	public String requestOTP(@RequestBody LoginUser loginUser) throws JsonProcessingException {
 		if (StringUtils.isNotBlank(loginUser.getUsername())) {
 			if (userService.checkUserNameExists(loginUser.getUsername(), null) != 0L) {
-				if (userService.requestOTP(loginUser.getUsername())) {
-					return ResponseGenerator.successResponse("OTP sent successfully!");
+				Boolean authorized = Boolean.FALSE;
+
+				// Mobile login validation
+				if (loginUser.getIsMobile() != null && loginUser.getIsMobile()) {
+					// Allow only inspector role
+					List<Role> userRoles = userService.findAllRolesByUser(null, null, loginUser.getUsername());
+					if (userRoles != null && userRoles.size() > 0) {
+						for (Role role : userRoles) {
+							if (role.getName().equalsIgnoreCase(Constants.UserRoles.INSPECTOR.name())) {
+								authorized = Boolean.TRUE;
+								break;
+							}
+						}
+					}
+				} else {
+					authorized = Boolean.TRUE;
 				}
-				return ResponseGenerator.failureResponse("Failed to send OTP.");
+
+				// send otp
+				if (authorized) {
+					if (userService.requestOTP(loginUser.getUsername())) {
+						return ResponseGenerator.successResponse("OTP sent successfully!");
+					}
+					return ResponseGenerator.failureResponse("Failed to send OTP.");
+				}
 			}
 			return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED_USER);
 		} else {

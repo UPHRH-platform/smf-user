@@ -74,7 +74,7 @@ public class AuthenticationController {
 			userAuthentication.setAuthToken(token);
 			userAuthentication = userService.save(userAuthentication);
 			LOGGER.info("Saving the User Authentication on Auth Records Log");
-			List<Role> userRoles = userService.findAllRolesByUser(user.getId(), user.getOrgId());
+			List<Role> userRoles = userService.findAllRolesByUser(user.getId(), user.getOrgId(), null);
 			LOGGER.info("Fetched Roles Assigned for the User");
 			LoginDto loginDto = new LoginDto();
 			loginDto.setUserAvatarUrl(user.getAvatarUrl());
@@ -133,7 +133,7 @@ public class AuthenticationController {
 
 				userProfile.setAuthToken(token);
 				// get user roles
-				List<Role> userRoles = userService.findAllRolesByUser(userProfile.getId(), userProfile.getOrgId());
+				List<Role> userRoles = userService.findAllRolesByUser(userProfile.getId(), userProfile.getOrgId(), null);
 				LOGGER.info("Fetched Roles Assigned for the User");
 				userProfile.setRoles(userRoles);
 

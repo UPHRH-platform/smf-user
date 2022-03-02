@@ -109,6 +109,7 @@ public interface Sql {
 		final String GET_ROLES_FOR_USER_BY_ID = " select ur.user_id, ur.role_id, r.role_name, r.description , r.is_super_admin as is_super_admin , \r\n"
 				+ "r.org_id as org_id from user_role ur LEFT JOIN role r ON ur.role_id = r.id \r\n"
 				+ "WHERE ur.user_id = ?";
+		final String GET_ROLES_BY_USERNAME = "select ur.user_id, ur.role_id, r.role_name, r.description , r.is_super_admin as is_super_admin, r.org_id as org_id from user_role ur LEFT JOIN role r ON ur.role_id = r.id, user WHERE user.id = ur.user_id and user.username = ?";
 		final String GET_USER_BY_PHONE = "SELECT usr.id as id, username, password, email_id, phone_no, usr.org_id, c.code as code, usr.timezone  FROM user usr left join country_user cu on usr.id = cu.user_id left join country c on c.id = cu.country_id WHERE phone_no=?";
 		final String USER_ACTIVE_CONDITION = " WHERE usr.is_active = ? ";
 		final String WHERE_CLAUSE = " WHERE ";

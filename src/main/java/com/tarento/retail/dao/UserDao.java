@@ -224,7 +224,7 @@ public interface UserDao {
 
 	public UserProfileMapper findAll(Boolean active, String keyword, List<Long> roles, String countryCode, Long orgId);
 
-	public UserRoleMapper findAllRolesByUser(Long userId, String orgId);
+	public UserRoleMapper findAllRolesByUser(Long userId, String orgId, String username);
 
 	public Long fetchAuthTokenReference(String authToken);
 

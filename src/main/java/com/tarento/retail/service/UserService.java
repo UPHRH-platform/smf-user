@@ -113,7 +113,7 @@ public interface UserService {
 	 * @param userId
 	 * @return
 	 */
-	public List<Role> findAllRolesByUser(Long userId, String orgId);
+	public List<Role> findAllRolesByUser(Long userId, String orgId, String username);
 
 	/**
 	 * This method receives the User ID and then fetches the Role ID for the same

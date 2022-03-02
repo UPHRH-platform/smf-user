@@ -295,13 +295,15 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public UserRoleMapper findAllRolesByUser(Long userId, String orgId) {
+	public UserRoleMapper findAllRolesByUser(Long userId, String orgId, String username) {
 		UserRoleMapper mapper = new SqlDataMapper().new UserRoleMapper();
 		try {
-			if (StringUtils.isBlank(orgId)) {
+			if (StringUtils.isBlank(orgId) && userId != null) {
 				jdbcTemplate.query(UserQueries.GET_ROLES_FOR_USER_BY_ID, new Object[] { userId }, mapper);
-			} else {
+			} else if (StringUtils.isNotBlank(orgId) && userId != null) {
 				jdbcTemplate.query(UserQueries.GET_ROLES_FOR_USER, new Object[] { userId, orgId }, mapper);
+			} else if (StringUtils.isNotBlank(username)) {
+				jdbcTemplate.query(UserQueries.GET_ROLES_BY_USERNAME, new Object[] { username }, mapper);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Encountered an exception while fetching the Roles for a User : " + e);

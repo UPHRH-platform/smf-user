@@ -176,8 +176,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 
 	@Override
-	public List<Role> findAllRolesByUser(Long userId, String orgId) {
-		UserRoleMapper mapper = userDao.findAllRolesByUser(userId, orgId);
+	public List<Role> findAllRolesByUser(Long userId, String orgId, String username) {
+		UserRoleMapper mapper = userDao.findAllRolesByUser(userId, orgId, username);
 		List<Role> roleList = new ArrayList<>();
 		Iterator<Entry<Long, Role>> itr = mapper.roleMap.entrySet().iterator();
 		while (itr.hasNext()) {
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Override
 	public Set<Action> findAllActionsByUser(Long userId, String orgId) {
 		Set<Action> actions = new HashSet<Action>();
-		UserRoleMapper mapper = userDao.findAllRolesByUser(userId, orgId);
+		UserRoleMapper mapper = userDao.findAllRolesByUser(userId, orgId, null);
 		List<Role> roleList = new ArrayList<>();
 		Iterator<Entry<Long, Role>> itr = mapper.roleMap.entrySet().iterator();
 		while (itr.hasNext()) {

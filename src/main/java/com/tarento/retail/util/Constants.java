@@ -190,4 +190,8 @@ public class Constants {
 			}
 		};
 	}
+
+	public static enum UserRoles {
+		INSPECTOR
+	}
 }
