@@ -96,6 +96,7 @@ public class SqlDataMapper {
 			UserDeviceToken token = new UserDeviceToken();
 			token.setDeviceToken(rs.getString("device_token"));
 			token.setUserId(rs.getLong("user_id"));
+			token.setAuthToken(rs.getString("auth_token"));
 			return token;
 		}
 	}
@@ -311,10 +312,10 @@ public class SqlDataMapper {
 			return action;
 		}
 	}
-	
+
 	public class UserRoleCountMapper implements RowMapper<KeyValue> {
 		public KeyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
-			KeyValue keyValue = new KeyValue(); 
+			KeyValue keyValue = new KeyValue();
 			keyValue.setKey(rs.getString("roleName"));
 			keyValue.setValue(rs.getObject("numberOfUsers"));
 			return keyValue;

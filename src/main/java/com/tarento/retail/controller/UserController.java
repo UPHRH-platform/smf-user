@@ -394,17 +394,16 @@ public class UserController {
 		return ResponseGenerator.failureResponse("Failed");
 	}
 
-	@RequestMapping(value = "getDeviceTokenForUserIds", method = RequestMethod.GET)
-	public List<UserDeviceToken> getUsersForAStore(
-			@RequestParam(value = "userIds", required = false) List<Long> userIdList) throws JsonProcessingException {
+	@RequestMapping(value = PathRoutes.UserRoutes.GET_USER_DEVICE_TOKEN, method = RequestMethod.GET)
+	public String getUsersDeviceToken(@RequestParam(value = "userIds", required = false) List<Long> userIdList)
+			throws JsonProcessingException {
 		if (userIdList != null) {
 			List<UserDeviceToken> tokenList = userService.getDeviceTokenForUsers(userIdList);
 			if (tokenList != null) {
-				return tokenList;
+				return ResponseGenerator.successResponse(tokenList);
 			}
-			return null;
 		}
-		return null;
+		return ResponseGenerator.failureResponse();
 	}
 
 	@RequestMapping(value = PathRoutes.UserRoutes.CREATE_UPDATE_COUNTRY, method = RequestMethod.POST)

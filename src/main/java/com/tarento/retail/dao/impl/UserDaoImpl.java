@@ -22,6 +22,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.tarento.retail.config.JwtTokenUtil;
 import com.tarento.retail.dao.RoleDao;
 import com.tarento.retail.dao.UserDao;
 import com.tarento.retail.dto.CountryDto;
@@ -63,6 +64,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	RoleDao roleDao;
+
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
 	@Override
 	public List<Action> findAllActionsByRoleID(Integer roleID) {
@@ -643,8 +647,14 @@ public class UserDaoImpl implements UserDao {
 	public List<UserDeviceToken> getDeviceTokenForUserList(List<Long> userIdList) {
 		List<UserDeviceToken> tokenList = new ArrayList<>();
 		try {
-			tokenList = jdbcTemplate.query(UserQueries.FETCH_USER_DEVICE_TOKEN + getIdQuery(userIdList)
-					+ UserQueries.USER_DEVICE_ROLE_CONDITION, new SqlDataMapper().new UserDeviceMapper());
+			List<UserDeviceToken> response = jdbcTemplate.query(
+					UserQueries.FETCH_USER_DEVICE_TOKEN + getIdQuery(userIdList),
+					new SqlDataMapper().new UserDeviceMapper());
+			for (UserDeviceToken tokens : response) {
+				if (!jwtTokenUtil.isTokenExpired(tokens.getAuthToken())) {
+					tokenList.add(tokens);
+				}
+			}
 		} catch (Exception e) {
 			LOGGER.error("Encountered an Exception while fetching User Device Token Map: " + e);
 		}
