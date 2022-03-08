@@ -596,4 +596,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		return userDao.getNumberOfUsersAndRoles();
 	}
 
+	@Override
+	public Boolean setUserPin(int pin, Long userId) {
+		String encryptedPin = bcryptEncoder.encode(String.valueOf(pin));
+		return userDao.setUserPin(encryptedPin, userId);
+	}
+
+	@Override
+	public Boolean validateUserPin(String username, int pin) {
+		return userDao.validateUserPin(pin, username);
+	}
+
 }

@@ -58,7 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/user/mapUserMasterRoleCountryOrg", "/user/getMasterRoleByOrgDomain", "/user/domainRole",
 						"/user/getUsersByRole", "/user/addOrgDomainRoles",
 						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.REQUEST_OTP,
-						PathRoutes.AuthenticationRoutes.SIGN_IN)
+						PathRoutes.AuthenticationRoutes.SIGN_IN,
+						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.GENERATE_PIN)
 				.permitAll().anyRequest().authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

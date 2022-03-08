@@ -237,4 +237,8 @@ public interface UserService {
 
 	List<KeyValue> getNumberOfUsersAndRoles();
 
+	public Boolean setUserPin(int pin, Long userId);
+
+	public Boolean validateUserPin(String username, int pin);
+
 }

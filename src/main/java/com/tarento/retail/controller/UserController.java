@@ -574,4 +574,17 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = PathRoutes.UserRoutes.GENERATE_PIN, method = RequestMethod.POST)
+	public String generatePin(@RequestBody LoginUser loginUser) throws JsonProcessingException {
+		if (StringUtils.isNotBlank(loginUser.getUsername()) && String.valueOf(loginUser.getPin()).length() == 4
+				&& StringUtils.isNotBlank(loginUser.getOtp())) {
+			Long userId = userService.checkUserNameExists(loginUser.getUsername(), null);
+			if (userId != 0L && userService.validateUserOTP(loginUser.getUsername(), loginUser.getOtp())) {
+				return ResponseGenerator.successResponse(userService.setUserPin(loginUser.getPin(), userId));
+			}
+			return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED_USER);
+		}
+		return ResponseGenerator.failureResponse("Check your request params");
+	}
+
 }

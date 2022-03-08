@@ -258,4 +258,8 @@ public interface UserDao {
 
 	public List<KeyValue> getNumberOfUsersAndRoles();
 
+	public Boolean setUserPin(String encryptedPin, Long userId);
+
+	public Boolean validateUserPin(int pin, String username);
+
 }

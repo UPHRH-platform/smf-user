@@ -115,8 +115,13 @@ public class AuthenticationController {
 
 	@RequestMapping(value = PathRoutes.AuthenticationRoutes.SIGN_IN, method = RequestMethod.POST)
 	public String signIn(@RequestBody LoginUser loginUser) throws JsonProcessingException {
-		if (StringUtils.isNotBlank(loginUser.getUsername()) && StringUtils.isNotBlank(loginUser.getOtp())) {
-			Boolean valid = userService.validateUserOTP(loginUser.getUsername(), loginUser.getOtp());
+		if (StringUtils.isNotBlank(loginUser.getUsername())) {
+			Boolean valid = Boolean.FALSE;
+			if (StringUtils.isNotBlank(loginUser.getOtp())) {
+				valid = userService.validateUserOTP(loginUser.getUsername(), loginUser.getOtp());
+			} else if (String.valueOf(loginUser.getPin()).length() == 4) {
+				valid = userService.validateUserPin(loginUser.getUsername(), loginUser.getPin());
+			}
 			if (valid) {
 				// Generate JWT token
 				User user = new User();
@@ -133,7 +138,8 @@ public class AuthenticationController {
 
 				userProfile.setAuthToken(token);
 				// get user roles
-				List<Role> userRoles = userService.findAllRolesByUser(userProfile.getId(), userProfile.getOrgId(), null);
+				List<Role> userRoles = userService.findAllRolesByUser(userProfile.getId(), userProfile.getOrgId(),
+						null);
 				LOGGER.info("Fetched Roles Assigned for the User");
 				userProfile.setRoles(userRoles);
 

@@ -40,6 +40,7 @@ public interface PathRoutes {
 		final String REQUEST_OTP = "/requestOTP";
 		final String NUMBER_OF_USERS_ROLES_GET = "/getNumberOfUsersAndRoles";
 		final String GET_USER_DEVICE_TOKEN = "getDeviceTokenForUserIds";
+		final String GENERATE_PIN = "/generatePin";
 	}
 
 	public interface AuthenticationRoutes {

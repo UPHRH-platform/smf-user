@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import com.tarento.retail.config.JwtTokenUtil;
@@ -67,6 +68,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+
+	@Autowired
+	private BCryptPasswordEncoder bcryptEncoder;
 
 	@Override
 	public List<Action> findAllActionsByRoleID(Integer roleID) {
@@ -984,5 +988,30 @@ public class UserDaoImpl implements UserDao {
 			LOGGER.error("Encountered an Exception while fetching the User by Username : " + e);
 		}
 		return userList;
+	}
+
+	@Override
+	public Boolean setUserPin(String encryptedPin, Long userId) {
+		try {
+			jdbcTemplate.update(UserQueries.SET_USER_PIN, new Object[] { encryptedPin, userId });
+			return Boolean.TRUE;
+		} catch (Exception e) {
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "setUserPin", e.getMessage()));
+			return Boolean.FALSE;
+		}
+	}
+
+	@Override
+	public Boolean validateUserPin(int pin, String username) {
+		try {
+			List<String> userPin = jdbcTemplate.queryForList(UserQueries.GET_USER_PIN, new Object[] { username },
+					String.class);
+			if (userPin != null && userPin.size() > 0 && bcryptEncoder.matches(String.valueOf(pin), userPin.get(0))) {
+				return Boolean.TRUE;
+			}
+		} catch (Exception e) {
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserPin", e.getMessage()));
+		}
+		return Boolean.FALSE;
 	}
 }

@@ -13,4 +13,5 @@ public class LoginUser {
 	private String organization;
 	private String otp;
 	private Boolean isMobile;
+	private int pin;
 }
