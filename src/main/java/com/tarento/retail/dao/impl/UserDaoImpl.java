@@ -1014,4 +1014,15 @@ public class UserDaoImpl implements UserDao {
 		}
 		return Boolean.FALSE;
 	}
+
+	@Override
+	public Boolean deleteDeviceToken(Long userId, String deviceId) {
+		try {
+			jdbcTemplate.update(UserQueries.DELETE_DEVICE_TOKEN, new Object[] { userId, deviceId });
+			return Boolean.TRUE;
+		} catch (Exception e) {
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "deleteDeviceToken", e.getMessage()));
+		}
+		return Boolean.FALSE;
+	}
 }

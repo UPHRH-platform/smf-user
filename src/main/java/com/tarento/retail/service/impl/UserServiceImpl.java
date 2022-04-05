@@ -607,4 +607,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		return userDao.validateUserPin(pin, username);
 	}
 
+	@Override
+	public Boolean deleteDeviceToken(Long userId, String deviceId) {
+		return userDao.deleteDeviceToken(userId, deviceId);
+	}
+
 }

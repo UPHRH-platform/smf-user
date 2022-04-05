@@ -178,6 +178,7 @@ public interface Sql {
 		final String GET_NUMBER_USER_ROLES = "SELECT count(*) as 'numberOfUsers', r.role_name as 'roleName' from user usr LEFT JOIN user_role ur ON usr.id = ur.user_id LEFT JOIN role r ON ur.role_id = r.id where r.id > 2090 group by r.role_name ";
 		final String SET_USER_PIN = "UPDATE user SET pin=? WHERE id= ?";
 		final String GET_USER_PIN = "SELECT pin FROM user where username = ?";
+		final String DELETE_DEVICE_TOKEN = "DELETE FROM user_device WHERE user_id= ? AND device_id =?";
 	}
 
 	public interface NamedUserQueries {

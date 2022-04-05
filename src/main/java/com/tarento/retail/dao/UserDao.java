@@ -262,4 +262,6 @@ public interface UserDao {
 
 	public Boolean validateUserPin(int pin, String username);
 
+	public Boolean deleteDeviceToken(Long userId, String deviceId);
+
 }

@@ -587,4 +587,16 @@ public class UserController {
 		return ResponseGenerator.failureResponse("Check your request params");
 	}
 
+	@RequestMapping(value = PathRoutes.UserRoutes.DELETE_USER_DEVICE_TOKEN, method = RequestMethod.DELETE)
+	public String deleteDeviceToken(@RequestParam String deviceId,
+			@RequestHeader(value = "x-user-info", required = true) String xUserInfo) throws JsonProcessingException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		User thisUser = gson.fromJson(xUserInfo, User.class);
+
+		Boolean response = userService.deleteDeviceToken(thisUser.getId(), deviceId);
+		if (response)
+			return ResponseGenerator.successResponse("Success");
+
+		return ResponseGenerator.failureResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString());
+	}
 }

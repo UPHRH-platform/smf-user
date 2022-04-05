@@ -41,6 +41,7 @@ public interface PathRoutes {
 		final String NUMBER_OF_USERS_ROLES_GET = "/getNumberOfUsersAndRoles";
 		final String GET_USER_DEVICE_TOKEN = "getDeviceTokenForUserIds";
 		final String GENERATE_PIN = "/generatePin";
+		final String DELETE_USER_DEVICE_TOKEN = "/deleteDeviceToken";
 	}
 
 	public interface AuthenticationRoutes {

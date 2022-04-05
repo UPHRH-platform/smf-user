@@ -241,4 +241,6 @@ public interface UserService {
 
 	public Boolean validateUserPin(String username, int pin);
 
+	public Boolean deleteDeviceToken(Long userId, String deviceId);
+
 }
