@@ -149,6 +149,7 @@ public interface Sql {
 		final String INSERT_USER_DEVICE_TOKEN = "INSERT INTO user_device (user_id, device_token, device_id, created_date, user_auth_id) VALUES (?,?,?,?,?) ";
 		final String UPDATE_USER_DEVICE_TOKEN = "UPDATE user_device SET device_token = ?, created_date = ? WHERE user_id = ? ";
 		final String FETCH_USER_DEVICE_TOKEN = " SELECT device.id, device.user_id, device.device_token, auth_token FROM user_device device, user_authentication WHERE device.user_auth_id = user_authentication.id AND device.user_id IN ";
+		final String UPDATE_DEVICE_AUTH_REF = "UPDATE user_device SET user_auth_id= ? WHERE user_id= ? and device_token= ?";
 		final String USER_DEVICE_ROLE_CONDITION = " and exists (select 1 from user_role where user_id = device.user_id and role_id IN (1,2)) "
 				+ "and not exists (select 1 from user_role where user_id = device.user_id and role_id NOT IN (1,2)) ";
 		final String FETCH_AUTH_TOKEN_REF = "SELECT id FROM user_authentication WHERE auth_token = ? ";

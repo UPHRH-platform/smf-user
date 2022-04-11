@@ -1025,4 +1025,15 @@ public class UserDaoImpl implements UserDao {
 		}
 		return Boolean.FALSE;
 	}
+
+	@Override
+	public Boolean updateDeviceAuthRef(Long userId, String deviceToken, Long authId) {
+		try {
+			jdbcTemplate.update(UserQueries.UPDATE_DEVICE_AUTH_REF, new Object[] { authId, userId, deviceToken });
+			return Boolean.TRUE;
+		} catch (Exception e) {
+			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "updateDeviceAuthRef", e.getMessage()));
+		}
+		return Boolean.FALSE;
+	}
 }

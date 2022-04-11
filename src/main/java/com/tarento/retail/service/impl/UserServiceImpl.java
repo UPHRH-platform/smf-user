@@ -612,4 +612,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		return userDao.deleteDeviceToken(userId, deviceId);
 	}
 
+	@Override
+	public Boolean updateDeviceAuthRef(Long userId, String deviceToken, Long authId) {
+		return userDao.updateDeviceAuthRef(userId, deviceToken, authId);
+	}
+
 }

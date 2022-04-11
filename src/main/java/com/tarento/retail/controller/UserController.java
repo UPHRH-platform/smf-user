@@ -211,6 +211,8 @@ public class UserController {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		User thisUser = gson.fromJson(xUserInfo, User.class);
 		if (userService.checkUserTokenExists(thisUser.getId(), deviceToken.getDeviceToken())) {
+			Long authTokenRef = userService.fetchAuthTokenReference(thisUser.getAuthToken());
+			userService.updateDeviceAuthRef(thisUser.getId(), deviceToken.getDeviceToken(), authTokenRef);
 			return ResponseGenerator.successResponse("Success");
 		}
 		Long authTokenRef = userService.fetchAuthTokenReference(thisUser.getAuthToken());

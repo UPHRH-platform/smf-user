@@ -243,4 +243,6 @@ public interface UserService {
 
 	public Boolean deleteDeviceToken(Long userId, String deviceId);
 
+	public Boolean updateDeviceAuthRef(Long userId, String deviceToken, Long authId);
+
 }
