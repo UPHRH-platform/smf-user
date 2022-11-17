@@ -42,6 +42,7 @@ public interface PathRoutes {
 		final String GET_USER_DEVICE_TOKEN = "getDeviceTokenForUserIds";
 		final String GENERATE_PIN = "/generatePin";
 		final String DELETE_USER_DEVICE_TOKEN = "/deleteDeviceToken";
+		final String CREATE_BULK_INSTITUTE = "/createBulkInstitute";
 	}
 
 	public interface AuthenticationRoutes {

@@ -45,11 +45,13 @@ import com.tarento.retail.model.mapper.SqlDataMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserProfileMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleActionMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleMapper;
+import com.tarento.retail.model.InstituteCourses;
 import com.tarento.retail.util.Constants;
 import com.tarento.retail.util.Sql;
 import com.tarento.retail.util.Sql.Common;
 import com.tarento.retail.util.Sql.NamedUserQueries;
 import com.tarento.retail.util.Sql.UserQueries;
+import com.tarento.retail.util.Sql.InstituteCourseQueries;
 
 @Repository(Constants.USER_DAO)
 
@@ -1035,5 +1037,35 @@ public class UserDaoImpl implements UserDao {
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "updateDeviceAuthRef", e.getMessage()));
 		}
 		return Boolean.FALSE;
+	}
+	
+	@Override
+	public InstituteCourses getInstituteCourses(Long profileId, String course, String degree) {
+		try {
+			List<InstituteCourses> instituteCoursesList = jdbcTemplate.query(InstituteCourseQueries.GET_INSTITUTE_COURSES,
+					new Object[] { profileId, course, degree }, new SqlDataMapper().new InstituteCoursesMapper());
+			if (instituteCoursesList.size() != 0) {
+				return instituteCoursesList.get(0);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Encountered an Exception while fetching the InstituteCourses by { profileId, course, degree } : " + e);
+		}
+		return null;
+	}
+	
+	
+	@Override
+	public Boolean saveInstituteCourse(InstituteCourses instituteCourses) {
+		try {
+			jdbcTemplate.update(InstituteCourseQueries.ADD_INSTITUTE_COURSE, new Object[] { instituteCourses.getDistrictName(), instituteCourses.getCenterCode(),
+					instituteCourses.getDegree(), instituteCourses.getCourse(), instituteCourses.getAppliedYear(), 
+					instituteCourses.getSector(), instituteCourses.getProfileId(),
+					instituteCourses.getCreatedBy() });
+		} catch (Exception ex) {
+			LOGGER.error("Encountered an exception while adding the InstituteCourses : " + ex);
+			
+			return false;
+		}
+		return true;
 	}
 }

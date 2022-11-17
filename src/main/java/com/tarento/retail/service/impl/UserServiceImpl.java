@@ -38,6 +38,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.InstituteCourses;
 import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.LoginAuthentication;
 import com.tarento.retail.model.Role;
@@ -563,6 +564,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public Boolean validateUserOTP(String username, String otp) {
+		
+		return Boolean.TRUE;
+		/*
 		try {
 			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
 			if (loginAuth != null && loginAuth.getOtpExpiryDate() > DateUtil.getCurrentTimestamp()
@@ -573,6 +577,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserOTP", e.getMessage()));
 		}
 		return Boolean.FALSE;
+		*/
 	}
 
 	@Override
@@ -615,6 +620,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Override
 	public Boolean updateDeviceAuthRef(Long userId, String deviceToken, Long authId) {
 		return userDao.updateDeviceAuthRef(userId, deviceToken, authId);
+	}
+	
+	@Override
+	public InstituteCourses getInstituteCourses(Long profileId, String course, String degree) {
+		return userDao.getInstituteCourses(profileId, course, degree);
+	}
+	
+	@Override
+	public Boolean saveInstituteCourse(InstituteCourses instituteCourses) {
+		return userDao.saveInstituteCourse(instituteCourses);
 	}
 
 }

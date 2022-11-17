@@ -18,6 +18,7 @@ import com.tarento.retail.dto.UserDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.ActionRole;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.InstituteCourses;
 import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.User;
@@ -373,6 +374,26 @@ public class SqlDataMapper {
 			actionRole.setActionId(rs.getLong("action_id"));
 			actionRole.setRoleId(rs.getLong("role_id"));
 			return actionRole;
+		}
+	}
+	
+	public class InstituteCoursesMapper implements RowMapper<InstituteCourses> {
+		public InstituteCourses mapRow(ResultSet rs, int rowNum) throws SQLException {
+			InstituteCourses instituteCourses = new InstituteCourses();
+			instituteCourses.setId(rs.getLong("id"));
+			instituteCourses.setDistrictName(rs.getString("district_name"));
+			instituteCourses.setCenterCode(rs.getString("center_code"));
+			instituteCourses.setDegree(rs.getString("degree"));
+			instituteCourses.setCourse(rs.getString("course"));
+			instituteCourses.setAppliedYear(rs.getString("applied_year"));
+			instituteCourses.setSector(rs.getString("sector"));
+			instituteCourses.setProfileId(rs.getLong("profile_id"));
+			instituteCourses.setCreatedDate(rs.getDate("created_date"));
+			instituteCourses.setCreatedBy(rs.getLong("created_by"));
+			instituteCourses.setUpdatedDate(rs.getDate("updated_date"));
+			instituteCourses.setUpdatedBy(rs.getLong("updated_by"));
+			
+			return instituteCourses;
 		}
 	}
 
