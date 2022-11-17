@@ -174,7 +174,6 @@ public class UserController {
 			@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo,
 			@RequestHeader(value = Constants.AUTH_HEADER) String authToken) throws JsonProcessingException {
 
-		System.out.println("xUserInfo :: " + xUserInfo);
 		String validation = validationService.validateUserUpsert(profile);
 		if (validation.equals(Constants.SUCCESS)) {
 			if (StringUtils.isNotBlank(xUserInfo)) {
@@ -614,7 +613,6 @@ public class UserController {
 			@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo,
 			@RequestHeader(value = Constants.AUTH_HEADER) String authToken) throws JsonProcessingException {
 
-		System.out.println("********** create bulk institute being called **********");
 		 String message = "";
 		if (ExcelHelper.hasExcelFormat(file)) {
 		      try {
