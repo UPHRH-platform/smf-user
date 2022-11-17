@@ -1,5 +1,7 @@
 package com.tarento.retail.util;
 
+import java.util.Date;
+
 /**
  * This interface will hold all the SQL Quries which are being used by the
  * application Internally, the inner interface will have the queries separated
@@ -199,6 +201,12 @@ public interface Sql {
 
 		final String IN_CLAUSE = String.format(" IN (:%s)", Constants.Parameters.IN_VALUE);
 		final String APPEND_VALUE = String.format(" = :%s ", Constants.Parameters.VALUE);
+	}
+
+	public interface InstituteCourseQueries {
+		final String GET_INSTITUTE_COURSES = "SELECT ics.id, ics.district_name, ics.center_code, ics.degree, ics.course, ics.applied_year, ics.sector, ics.profile_id, ics.created_date, ics.created_by, ics.updated_date, ics.updated_by from institute_courses ics WHERE ics.profile_id = ? AND ics.course = ? AND ics.degree = ? ";
+		final String ADD_INSTITUTE_COURSE = "INSERT INTO institute_courses(district_name, center_code, degree, course, applied_year, sector, profile_id, created_by) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+		
 	}
 
 }

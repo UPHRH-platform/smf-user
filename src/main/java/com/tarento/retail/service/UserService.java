@@ -13,6 +13,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.InstituteCourses;
 import com.tarento.retail.model.KeyValue;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.SearchRequest;
@@ -244,5 +245,9 @@ public interface UserService {
 	public Boolean deleteDeviceToken(Long userId, String deviceId);
 
 	public Boolean updateDeviceAuthRef(Long userId, String deviceToken, Long authId);
+
+	InstituteCourses getInstituteCourses(Long profileId, String course, String degree);
+
+	Boolean saveInstituteCourse(InstituteCourses instituteCourses);
 
 }

@@ -38,6 +38,7 @@ import com.tarento.retail.dto.UserMasterRoleCountryOrgDto;
 import com.tarento.retail.dto.UserRoleDto;
 import com.tarento.retail.model.Action;
 import com.tarento.retail.model.Country;
+import com.tarento.retail.model.Institute;
 import com.tarento.retail.model.LoginUser;
 import com.tarento.retail.model.Role;
 import com.tarento.retail.model.SearchRequest;
@@ -48,8 +49,10 @@ import com.tarento.retail.model.contract.OTPValidationRequest;
 import com.tarento.retail.model.contract.OrderConfirmationRequest;
 import com.tarento.retail.model.contract.RoleActionRequest;
 import com.tarento.retail.model.enums.EmploymentType;
+import com.tarento.retail.service.ExcelService;
 import com.tarento.retail.service.UserService;
 import com.tarento.retail.util.Constants;
+import com.tarento.retail.util.ExcelHelper;
 import com.tarento.retail.util.PathRoutes;
 import com.tarento.retail.util.ResponseGenerator;
 import com.tarento.retail.util.ResponseMessages;
@@ -70,6 +73,9 @@ public class UserController {
 
 	@Autowired
 	private ValidationService validationService;
+	
+	@Autowired
+	private ExcelService excelService;
 
 	public static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -600,5 +606,32 @@ public class UserController {
 			return ResponseGenerator.successResponse("Success");
 
 		return ResponseGenerator.failureResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString());
+	}
+	
+	@RequestMapping(value = PathRoutes.UserRoutes.CREATE_BULK_INSTITUTE, method = RequestMethod.POST)
+	public String createBulkInstitute(@RequestParam("file") MultipartFile file,@RequestParam("roleId") Long roleId,
+			@RequestHeader(value = Constants.USER_INFO_HEADER, required = false) String xUserInfo,
+			@RequestHeader(value = Constants.AUTH_HEADER) String authToken) throws JsonProcessingException {
+
+		 String message = "";
+		if (ExcelHelper.hasExcelFormat(file)) {
+		      try {
+		    	  
+		        excelService.bulkCreateInstitute(file, xUserInfo,roleId);
+
+		        message = "Uploaded the file successfully: " + file.getOriginalFilename();
+		        return ResponseGenerator.successResponse("Success");
+		      } catch (Exception e) {
+		    	  e.printStackTrace();
+		        message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+		        return ResponseGenerator.failureResponse(message);
+		        
+		      }
+		    }
+
+		    message = "Please upload an excel file!";
+		    return ResponseGenerator.failureResponse(message);
+		    
+		
 	}
 }

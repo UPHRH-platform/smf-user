@@ -19,6 +19,7 @@ import com.tarento.retail.model.UserProfile;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserProfileMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleActionMapper;
 import com.tarento.retail.model.mapper.SqlDataMapper.UserRoleMapper;
+import com.tarento.retail.model.InstituteCourses;
 
 public interface UserDao {
 
@@ -265,5 +266,9 @@ public interface UserDao {
 	public Boolean deleteDeviceToken(Long userId, String deviceId);
 
 	public Boolean updateDeviceAuthRef(Long userId, String deviceToken, Long authId);
+
+	InstituteCourses getInstituteCourses(Long profileId, String course, String degree);
+
+	Boolean saveInstituteCourse(InstituteCourses instituteCourses);
 
 }

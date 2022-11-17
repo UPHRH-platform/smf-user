@@ -81,6 +81,7 @@ public class Constants {
 	public static final String USER_DAO = "userDao";
 	public static final String ROLE_ACTION_SERVICE = "roleActionService";
 	public static final String ROLE_DAO = "roleDao";
+	public static final String EXCEL_SERVICE = "excelService";
 
 	/**
 	 * Messages

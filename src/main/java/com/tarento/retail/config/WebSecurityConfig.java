@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/user/deleteUser", "/user/getMapActionToRole", "/user/getUnmapActionToRole",
 						"/user/mapActionToRole", "/user/unmapActionToRole", "/user/getUsersByMasterRole",
 						"/user/mapUserMasterRoleCountryOrg", "/user/getMasterRoleByOrgDomain", "/user/domainRole",
-						"/user/getUsersByRole", "/user/addOrgDomainRoles",
+						"/user/getUsersByRole", "/user/addOrgDomainRoles","/user/createBulkInstitute",
 						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.REQUEST_OTP,
 						PathRoutes.AuthenticationRoutes.SIGN_IN,
 						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.GENERATE_PIN)
