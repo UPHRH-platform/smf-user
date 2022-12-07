@@ -57,6 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/user/mapActionToRole", "/user/unmapActionToRole", "/user/getUsersByMasterRole",
 						"/user/mapUserMasterRoleCountryOrg", "/user/getMasterRoleByOrgDomain", "/user/domainRole",
 						"/user/getUsersByRole", "/user/addOrgDomainRoles","/user/createBulkInstitute",
+						"/user/admin/deleteUser",
 						"/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
