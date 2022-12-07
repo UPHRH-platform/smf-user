@@ -271,4 +271,6 @@ public interface UserDao {
 
 	Boolean saveInstituteCourse(InstituteCourses instituteCourses);
 
+	Boolean softDeleteUser(UserDto user);
+
 }

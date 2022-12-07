@@ -493,6 +493,25 @@ public class UserController {
 		}
 		return ResponseGenerator.failureResponse("Invalid Token");
 	}
+	
+	// DELETE user
+		@RequestMapping(value = PathRoutes.UserRoutes.ADMIN_DELETE_USER, method = RequestMethod.POST)
+		public Object softDeleteUser(@RequestBody UserDto userDto,
+				@RequestHeader(value = Constants.AUTH_HEADER) String authToken, BindingResult result)
+				throws JsonProcessingException {
+			if (result.hasErrors()) {
+				return ResponseGenerator.failureResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString());
+			}
+			Boolean userTokenAvailable = userService.findUserByToken(authToken);
+			String username = "";
+
+			if (userTokenAvailable) {
+				username = jwtTokenUtil.getUsernameFromToken(authToken);
+				User user = userService.findOne(username);
+				return ResponseGenerator.successResponse(userService.softDeleteUser(userDto));
+			}
+			return ResponseGenerator.failureResponse("Invalid Token");
+		}
 
 	// User List based on ROLE and Org Domain
 	@RequestMapping(value = PathRoutes.UserRoutes.GET_USERS_BY_MASTER_ROLE, method = RequestMethod.GET)

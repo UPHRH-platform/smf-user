@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.tarento.retail.util.Constants;
 
-
 @SpringBootApplication
 public class Application {
 
@@ -34,5 +33,6 @@ public class Application {
     public TokenStore tokenStore() {
         return new InMemoryTokenStore();
     }
+   
 
 }

@@ -57,6 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/user/mapActionToRole", "/user/unmapActionToRole", "/user/getUsersByMasterRole",
 						"/user/mapUserMasterRoleCountryOrg", "/user/getMasterRoleByOrgDomain", "/user/domainRole",
 						"/user/getUsersByRole", "/user/addOrgDomainRoles","/user/createBulkInstitute",
+						"/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**",
 						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.REQUEST_OTP,
 						PathRoutes.AuthenticationRoutes.SIGN_IN,
 						PathRoutes.USER_ACTIONS_URL + PathRoutes.UserRoutes.GENERATE_PIN)

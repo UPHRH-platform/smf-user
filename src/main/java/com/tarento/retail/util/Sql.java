@@ -130,6 +130,7 @@ public interface Sql {
 		final String TAIL_CONDITIONS_COUNTRY_LIKE = " prof.country LIKE ?";
 		final String TAIL_CONDITIONS_USER_ACTIVE = " usr.is_active is TRUE ";
 		final String TAIL_CONDITIONS_USER_INACTIVE = " usr.is_active is FALSE ";
+		final String TAIL_CONDITIONS_USER_NOT_DELETED = " usr.is_deleted is FALSE ";
 		final String TAIL_CONDITIONS_USER_ROLEIN = " usrrole.role_id IN ";
 		final String TAIL_CONDITIONS_COUNTRY_EQUALS = " prof.country = ? ";
 		final String ORDER_BY_USER_ID = " ORDER BY usr.id ";
@@ -157,6 +158,7 @@ public interface Sql {
 		final String FETCH_AUTH_TOKEN_REF = "SELECT id FROM user_authentication WHERE auth_token = ? ";
 		final String REMOVE_USER_DEVICE_TOKEN = "DELETE from user_device WHERE user_auth_id IN (SELECT id FROM user_authentication WHERE auth_token =?) ";
 		final String DELETE_USER = "DELETE from user WHERE id=?";
+		final String SOFT_DELETE_USER = "UPDATE user SET deleted=1 WHERE id= ?";
 		final String DELETE_USER_ROLE = "DELETE from user_role where user_id=?";
 		final String DELETE_COUNTRY_USER = "DELETE from country_user where user_id=?";
 

@@ -250,4 +250,6 @@ public interface UserService {
 
 	Boolean saveInstituteCourse(InstituteCourses instituteCourses);
 
+	Boolean softDeleteUser(UserDto userDto);
+
 }

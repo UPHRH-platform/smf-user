@@ -473,6 +473,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	public Boolean deleteUser(UserDto userDto) {
 		return userDao.deleteUser(userDto);
 	}
+	@Override
+	public Boolean softDeleteUser(UserDto userDto) {
+		return userDao.deleteUser(userDto);
+	}
 
 	@Override
 	public List<UserDto> getUsersByMasterRole(String roleCode, Long orgId) {
@@ -564,8 +568,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public Boolean validateUserOTP(String username, String otp) {
-		
-		return Boolean.TRUE;
+		return Boolean.TRUE; //remove when commit the code
 		/*
 		try {
 			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
