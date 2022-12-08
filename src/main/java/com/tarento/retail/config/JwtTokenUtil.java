@@ -75,7 +75,7 @@ public class JwtTokenUtil implements Serializable {
 		claims.put(CLAIMS_KEY, Arrays.asList(new SimpleGrantedAuthority(JWT_GRANTED_AUTHORITY)));
 
 		return Jwts.builder().setClaims(claims).setIssuer(JWT_ISSUER).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + appConfig.getJwtValidity() * 60 * 1000))
+				.setExpiration(new Date(System.currentTimeMillis() + appConfig.getJwtValidity() * 60 * 10000))
 				.signWith(SignatureAlgorithm.HS256, SIGNING_KEY).compact();
 	}
 
