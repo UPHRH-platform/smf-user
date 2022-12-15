@@ -32,6 +32,7 @@ public class UserProfile extends User {
 	private List<Long> roleId;
 	private String countryCode;
 	private Long countryId;
+	private List<InstituteCourses> instituteCourses;
 
 	public Long getCountryId() {
 		return countryId;
@@ -203,5 +204,14 @@ public class UserProfile extends User {
 	public void setRoleId(List<Long> roleId) {
 		this.roleId = roleId;
 	}
+
+	public List<InstituteCourses> getInstituteCourses() {
+		return instituteCourses;
+	}
+
+	public void setInstituteCourses(List<InstituteCourses> instituteCourses) {
+		this.instituteCourses = instituteCourses;
+	}
+	
 
 }

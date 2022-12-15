@@ -252,4 +252,6 @@ public interface UserService {
 
 	Boolean softDeleteUser(UserDto userDto);
 
+	List<InstituteCourses> findAllInstituteCourses(Long userId);
+
 }

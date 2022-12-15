@@ -28,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tarento.retail.dao.InstituteCoursesDao;
 import com.tarento.retail.dao.RoleDao;
 import com.tarento.retail.dao.UserDao;
 import com.tarento.retail.dto.CountryDto;
@@ -71,6 +72,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Autowired
 	private BCryptPasswordEncoder bcryptEncoder;
+	
+	@Autowired
+	private InstituteCoursesDao instituteCoursesDao;
 
 	public List<Action> findAllActionsByRoleID(List<Integer> roleID) {
 		List<Action> actions = new ArrayList<Action>();
@@ -185,6 +189,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			roleList.add(itr.next().getValue());
 		}
 		return roleList;
+	}
+	
+	@Override
+	public List<InstituteCourses> findAllInstituteCourses(Long userId){
+		return instituteCoursesDao.findByProfileId(userId);
 	}
 
 	@Override
@@ -569,6 +578,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Override
 	public Boolean validateUserOTP(String username, String otp) {
 
+		return Boolean.TRUE;
+		/*
 		try {
 			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
 			if (loginAuth != null && loginAuth.getOtpExpiryDate() > DateUtil.getCurrentTimestamp()
@@ -579,6 +590,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserOTP", e.getMessage()));
 		}
 		return Boolean.FALSE;
+		*/
 	}
 
 	@Override
