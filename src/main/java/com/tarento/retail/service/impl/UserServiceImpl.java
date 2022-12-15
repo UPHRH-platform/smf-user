@@ -475,7 +475,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 	@Override
 	public Boolean softDeleteUser(UserDto userDto) {
-		return userDao.deleteUser(userDto);
+		return userDao.softDeleteUser(userDto);
 	}
 
 	@Override
