@@ -789,6 +789,17 @@ public class UserDaoImpl implements UserDao {
 		}
 		return Boolean.TRUE;
 	}
+	
+	@Override
+	public Boolean softDeleteUser(UserDto user) {
+		try {
+			jdbcTemplate.update(Sql.UserQueries.SOFT_DELETE_USER, new Object[] { user.getId() });
+		} catch (Exception ex) {
+			LOGGER.error("Encounter an exception while deleting the user: " + ex);
+			return Boolean.FALSE;
+		}
+		return Boolean.TRUE;
+	}
 
 	@Override
 	public List<UserDto> getUsersByMasterRole(String roleCode, Long orgId) {
@@ -909,6 +920,10 @@ public class UserDaoImpl implements UserDao {
 			}
 			paramMap.put(Constants.Parameters.ACTIVE, searchRequest.getActive());
 		}
+		// not deleted user
+		condition = addQueryCondition(builder, condition);
+		builder.append(UserQueries.TAIL_CONDITIONS_USER_NOT_DELETED);
+		
 		// roleId
 		if (searchRequest.getRoleId() != null && searchRequest.getRoleId().size() > 0) {
 			condition = addQueryCondition(builder, condition);

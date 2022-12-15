@@ -34,6 +34,7 @@ public interface PathRoutes {
 		final String REMOVE_ROLE_MAPPING = "/role/mapping/delete";
 		final String DELETE_COUNTRY = "/deleteCountry";
 		final String DELETE_USER = "/deleteUser";
+		final String ADMIN_DELETE_USER = "/admin/deleteUser";
 		final String GET_USER_LIST_BY_ORG = "/getUserListByOrg";
 		final String GET_USERS_BY_MASTER_ROLE = "getUsersByMasterRole";
 		final String MAP_USER_MASTER_ROLE_COUNTRY_ORG = "mapUserMasterRoleCountryOrg";
