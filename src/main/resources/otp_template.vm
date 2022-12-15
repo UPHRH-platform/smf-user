@@ -295,13 +295,13 @@
                         <tr>
                             <td class="free-text PT25">
                                 #if($otp)
-                                $otp is your UP SMF Login OTP. This is valid for the next 5 mins.
+                                Your UP SMF login OTP is $otp. It is valid for 5 mins.
                                 #end
                             </td>
                         </tr>
                         <tr>
                             <td class="free-text PT25">
-                                Thank you!
+                                Thank you.
                             </td>
                         </tr>
 

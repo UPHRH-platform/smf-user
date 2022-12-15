@@ -568,8 +568,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 	@Override
 	public Boolean validateUserOTP(String username, String otp) {
-		return Boolean.TRUE; //remove when commit the code
-		/*
+
 		try {
 			LoginAuthentication loginAuth = Cache.getUserAuthData(username);
 			if (loginAuth != null && loginAuth.getOtpExpiryDate() > DateUtil.getCurrentTimestamp()
@@ -580,7 +579,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			LOGGER.error(String.format(Constants.EXCEPTION_METHOD, "validateUserOTP", e.getMessage()));
 		}
 		return Boolean.FALSE;
-		*/
 	}
 
 	@Override
