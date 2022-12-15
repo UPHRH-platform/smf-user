@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tarento.retail.config.JwtTokenUtil;
 import com.tarento.retail.dto.UserDto;
+import com.tarento.retail.model.InstituteCourses;
 import com.tarento.retail.model.LoginDto;
 import com.tarento.retail.model.LoginUser;
 import com.tarento.retail.model.Role;
@@ -142,7 +143,9 @@ public class AuthenticationController {
 						null);
 				LOGGER.info("Fetched Roles Assigned for the User");
 				userProfile.setRoles(userRoles);
-
+				
+				List<InstituteCourses> instituteCourses = userService.findAllInstituteCourses(userProfile.getId());
+				userProfile.setInstituteCourses(instituteCourses);
 				return ResponseGenerator.successResponse(userProfile);
 			}
 		}
