@@ -502,13 +502,9 @@ public class UserController {
 			if (result.hasErrors()) {
 				return ResponseGenerator.failureResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString());
 			}
-			Boolean userTokenAvailable = userService.findUserByToken(authToken);
-			String username = "";
 
-			if (userTokenAvailable) {
-				username = jwtTokenUtil.getUsernameFromToken(authToken);
-				User user = userService.findOne(username);
-				return ResponseGenerator.successResponse(userService.softDeleteUser(userDto));
+			if (userService.softDeleteUser(userDto)) {
+				return ResponseGenerator.successResponse(true);
 			}
 			return ResponseGenerator.failureResponse("Invalid Token");
 		}

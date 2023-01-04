@@ -158,7 +158,7 @@ public interface Sql {
 		final String FETCH_AUTH_TOKEN_REF = "SELECT id FROM user_authentication WHERE auth_token = ? ";
 		final String REMOVE_USER_DEVICE_TOKEN = "DELETE from user_device WHERE user_auth_id IN (SELECT id FROM user_authentication WHERE auth_token =?) ";
 		final String DELETE_USER = "DELETE from user WHERE id=?";
-		final String SOFT_DELETE_USER = "UPDATE user SET deleted=1 WHERE id= ?";
+		final String SOFT_DELETE_USER = "UPDATE user SET is_deleted=1, is_active = 0 WHERE id= ?";
 		final String DELETE_USER_ROLE = "DELETE from user_role where user_id=?";
 		final String DELETE_COUNTRY_USER = "DELETE from country_user where user_id=?";
 
