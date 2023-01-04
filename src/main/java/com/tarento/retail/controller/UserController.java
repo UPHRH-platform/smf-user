@@ -494,7 +494,7 @@ public class UserController {
 		return ResponseGenerator.failureResponse("Invalid Token");
 	}
 	
-	// DELETE user
+	// SOFT DELETE user
 		@RequestMapping(value = PathRoutes.UserRoutes.ADMIN_DELETE_USER, method = RequestMethod.POST)
 		public Object softDeleteUser(@RequestBody UserDto userDto,
 				@RequestHeader(value = Constants.AUTH_HEADER) String authToken, BindingResult result)
@@ -502,13 +502,10 @@ public class UserController {
 			if (result.hasErrors()) {
 				return ResponseGenerator.failureResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString());
 			}
-			Boolean userTokenAvailable = userService.findUserByToken(authToken);
-			String username = "";
 
-			if (userTokenAvailable) {
-				username = jwtTokenUtil.getUsernameFromToken(authToken);
-				User user = userService.findOne(username);
-				return ResponseGenerator.successResponse(userService.softDeleteUser(userDto));
+			if (userService.softDeleteUser(userDto)) {
+				
+				return ResponseGenerator.successResponse(true);
 			}
 			return ResponseGenerator.failureResponse("Invalid Token");
 		}
