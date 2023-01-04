@@ -443,6 +443,7 @@ public class UserDaoImpl implements UserDao {
 		try {
 			userId = jdbcTemplate.queryForObject(UserQueries.GET_USER_ID, new Object[] { emailId, emailId, phoneNo },
 					Long.class);
+			
 		} catch (Exception e) {
 			LOGGER.error("Encountered an Exception while finding the UserName Availability : " + e);
 		}

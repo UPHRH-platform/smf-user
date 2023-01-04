@@ -564,33 +564,44 @@ public class UserController {
 	@RequestMapping(value = PathRoutes.UserRoutes.REQUEST_OTP, method = RequestMethod.POST)
 	public String requestOTP(@RequestBody LoginUser loginUser) throws JsonProcessingException {
 		if (StringUtils.isNotBlank(loginUser.getUsername())) {
-			if (userService.checkUserNameExists(loginUser.getUsername(), null) != 0L) {
-				Boolean authorized = Boolean.FALSE;
+			User user = userService.getUserByEmailId(loginUser.getUsername());
+			if(user != null) {
+				if(!user.getIsDeleted()) {
 
-				// Mobile login validation
-				if (loginUser.getIsMobile() != null && loginUser.getIsMobile()) {
-					// Allow only inspector role
-					List<Role> userRoles = userService.findAllRolesByUser(null, null, loginUser.getUsername());
-					if (userRoles != null && userRoles.size() > 0) {
-						for (Role role : userRoles) {
-							if (role.getName().equalsIgnoreCase(Constants.UserRoles.INSPECTOR.name())) {
-								authorized = Boolean.TRUE;
-								break;
+					Boolean authorized = Boolean.FALSE;
+
+					// Mobile login validation
+					if (loginUser.getIsMobile() != null && loginUser.getIsMobile()) {
+						// Allow only inspector role
+						List<Role> userRoles = userService.findAllRolesByUser(null, null, loginUser.getUsername());
+						if (userRoles != null && userRoles.size() > 0) {
+							for (Role role : userRoles) {
+								if (role.getName().equalsIgnoreCase(Constants.UserRoles.INSPECTOR.name())) {
+									authorized = Boolean.TRUE;
+									break;
+								}
 							}
 						}
+					} else {
+						authorized = Boolean.TRUE;
 					}
-				} else {
-					authorized = Boolean.TRUE;
-				}
 
-				// send otp
-				if (authorized) {
-					if (userService.requestOTP(loginUser.getUsername())) {
-						return ResponseGenerator.successResponse("OTP sent successfully!");
+					// send otp
+					if (authorized) {
+						if (userService.requestOTP(loginUser.getUsername())) {
+							return ResponseGenerator.successResponse("OTP sent successfully!");
+						}
+						return ResponseGenerator.failureResponse("Failed to send OTP.");
 					}
-					return ResponseGenerator.failureResponse("Failed to send OTP.");
+				
+				}else {
+					return ResponseGenerator.failureResponse(Constants.DELETED_USER);
 				}
+				
+			}else {
+				return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED_USER);
 			}
+			
 			return ResponseGenerator.failureResponse(Constants.UNAUTHORIZED_USER);
 		} else {
 			return ResponseGenerator.failureResponse("Email id missing");

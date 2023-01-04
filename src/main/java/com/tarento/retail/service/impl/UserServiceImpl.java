@@ -270,6 +270,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	public Long checkUserNameExists(String emailId, String phoneNo) {
 		return userDao.checkUserNameExists(emailId, phoneNo);
 	}
+	
+	@Override
+	public User getUserByEmailId(String emailId) {
+		return userDao.findOnlyUser(emailId);
+	}
+	
 
 	@Override
 	public Boolean uploadFile(MultipartFile file, long userId) {
