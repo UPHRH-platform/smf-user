@@ -67,6 +67,8 @@ public class SqlDataMapper {
 			user.setUsername(rs.getString("username"));
 			user.setEmailId(rs.getString("email_id"));
 			user.setPhoneNo(rs.getString("phone_no"));
+			user.setIsActive(rs.getBoolean("is_active"));
+			user.setIsDeleted(rs.getBoolean("is_deleted"));
 			return user;
 		}
 	}

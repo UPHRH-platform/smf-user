@@ -28,7 +28,8 @@ public class User {
 	private String timeZone;
 	
 	private String avatarUrl;
-
+	
+	
 	public String getAvatarUrl() {
 		return avatarUrl;
 	}

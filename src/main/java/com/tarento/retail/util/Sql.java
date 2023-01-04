@@ -71,7 +71,7 @@ public interface Sql {
 		final String SELECT_USER_BY_TOKEN = "SELECT COUNT(*) FROM user_authentication WHERE auth_token = ? ";
 		final String SELECT_USER_ON_USERNAME = "SELECT * FROM user usr inner join country_user cu on usr.id =cu.user_id inner join country c on cu.country_id = c.id where username=? or phone_no = ?";
 
-		final String SELECT_ONLY_USER = "SELECT id, username, password, email_id, phone_no FROM user where username = ? or phone_no = ? ";
+		final String SELECT_ONLY_USER = "SELECT id, username, password, email_id, phone_no, is_active, is_deleted FROM user where username = ? or phone_no = ? ";
 
 		final String MAP_USER_TO_ROLE_WITH_ORG = "INSERT INTO user_role (user_id, role_id, org_id) VALUES (?, ?, ?)";
 		final String MAP_USER_TO_ROLE = "INSERT INTO user_role (user_id, role_id) VALUES (?, ?)";
@@ -178,7 +178,7 @@ public interface Sql {
 				+ " LEFT JOIN role_org ro ON ro.role_id = r.id " + " LEFT JOIN role_actions ra ON r.id = ra.role_id "
 				+ " LEFT JOIN actions act ON ra.action_id = act.id " + " WHERE usr.username = ? ";
 
-		final String GET_USER_ID = "SELECT id FROM user WHERE username = ? OR email_id = ? OR phone_no = ?";
+		final String GET_USER_ID = "SELECT id FROM user WHERE (username = ? OR email_id = ? OR phone_no = ?) and is_deleted = 0";
 		final String GET_USER_PROFILE = "SELECT user.id, user.username, user.email_id as emailId, user.phone_no as phoneNo, user.avatar_url  as avatarUrl, user_profile.first_name, user_profile.last_name, user_profile.dob FROM user LEFT JOIN user_profile on user_profile.user_id = user.id WHERE (user.username = ? or user.email_id = ? ) and is_active is TRUE";
 		final String GET_NUMBER_USER_ROLES = "SELECT count(*) as 'numberOfUsers', r.role_name as 'roleName' from user usr LEFT JOIN user_role ur ON usr.id = ur.user_id LEFT JOIN role r ON ur.role_id = r.id where r.id > 2090 group by r.role_name ";
 		final String SET_USER_PIN = "UPDATE user SET pin=? WHERE id= ?";

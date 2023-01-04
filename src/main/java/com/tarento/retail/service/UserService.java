@@ -254,4 +254,6 @@ public interface UserService {
 
 	List<InstituteCourses> findAllInstituteCourses(Long userId);
 
+	User getUserByEmailId(String emailId);
+
 }
